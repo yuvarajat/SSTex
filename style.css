@@ -1,0 +1,165 @@
+address {
+  display: inline;
+}
+
+/* Logo */
+
+.logo {
+  /* opacity: 0; */
+  background-color: white;
+}
+
+dt {
+  padding: 5px;
+  font-weight: bold;
+}
+
+/* A4 Page */
+page {
+  background: white;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 0.5cm;
+  /* box-shadow: 0 0 0.5cm rgba(0,0,0,0.5); */
+}
+page[size="A4"] {
+  width: 21cm;
+  height: 29.7cm;
+}
+
+/* Main Page Content */
+
+.main-grid {
+  padding: 20px;
+  /* margin: 10px; */
+}
+
+.header {
+  padding: 0 0 0.5rem 0;
+}
+
+.header > span {
+  border: 1px solid gray;
+  padding: 3px;
+  border-radius: 3px;
+  color: gray;
+}
+
+.main-table {
+  display: grid;
+  border: solid 1px;
+  border-collapse: collapse;
+  grid-template-columns: 50px 6fr 1fr 1fr repeat(2, 1.5fr);
+  grid-template-rows: auto 1fr auto auto 425px repeat(3, auto);
+}
+
+.sub-table {
+  display: grid;
+  border: solid 1px;
+  border-collapse: collapse;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.item {
+  border-style: solid;
+  border-width: 1px;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+.item1 {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 30px 2fr 4fr 2fr 30px;
+  grid-template-rows: 100px;
+  justify-items: center;
+  align-items: center;
+}
+
+.bname {
+  font-size: 30px;
+}
+
+.bslogan {
+  font-size: smaller;
+}
+
+.oname {
+  font-size: large;
+}
+
+.item2 {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-rows: auto 8px auto auto;
+  grid-template-columns: 1fr 1fr;
+}
+
+.baddress {
+  grid-column: 1/-1;
+  justify-self: center;
+}
+
+.empty {
+  grid-column: 1/-1;
+}
+
+.bpan-gst {
+  grid-column: span 1;
+  justify-self: left;
+}
+
+.bbankdetails {
+  grid-column: span 1;
+  justify-self: right;
+}
+
+.item3 {
+  grid-column: span 3;
+}
+
+.item4 {
+  grid-column: span 3;
+}
+
+.item17 {
+  grid-column: span 4;
+  grid-row: span 4;
+}
+
+.item28 {
+  grid-column: span 5;
+}
+
+.item30 {
+  grid-column: span 4;
+  padding: 15px;
+}
+
+.item31 {
+  grid-column: span 2;
+  padding: 15px;
+}
+
+.main-table img {
+  width: 70px;
+  border-radius: 50%;
+  justify-self: center;
+  align-self: center;
+}
+
+.bg-lgray {
+  background-color: lightgray;
+}
+
+.ta-center {
+  text-align: center;
+}
+
+.ta-right {
+  text-align: right;
+}
+
+.fw-bold {
+  font-weight: bold;
+}
