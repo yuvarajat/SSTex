@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SS Tex's Tax Inovice Generator</title>
+  </head>
+  <body>
+    <header>
+      <h1 class="ta-center">SS Tex's Tax Invoice Generator</h1>
+    </header>
+    <form id="form" method="" action="">
+      <table>
+        <tr>
+          <td><h3>BILL TO:</h3></td>
+        </tr>
+        <tr>
+          <td>Mill Name:</td>
+          <td><input id="millName" type="text" /></td>
+        </tr>
+        <tr>
+          <td>Mill Address:</td>
+          <td><textarea id="millAddress" type="text"></textarea></td>
+        </tr>
+        <tr>
+            <td>GSTIN:</td>
+            <td><input id="millGSTIN" type="text"></td>
+        </tr>
+        <tr>
+            <td>Invoice No:</td>
+            <td><input id="invoiceNo" type="text"></td>
+        </tr>
+        <tr>
+            <td>Invoice Date:</td>
+            <td><input id="invoiceDate" type="date" onchange="storeFormattedDate()"></td>
+        </tr>
+        <tr>
+            <td><br><button type="reset">RESET</button></td>
+            <td><br><button type="submit">SUBMIT</button></td>
+        </tr>
+      </table>
+    </form>
+    <script src="script.js"></script>
+  </body>
+</html>
