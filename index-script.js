@@ -21,5 +21,5 @@ form.addEventListener('submit', function(e) {
     localStorage.setItem('invoiceNo', invoiceNo);
     localStorage.setItem('invoiceDate', invoiceDate);
 
-    window.location.href = "index.html";
+    window.location.href = "bill.html";
 });
