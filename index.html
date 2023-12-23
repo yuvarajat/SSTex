@@ -3,112 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SS Tex</title>
-    <link rel="stylesheet" href="style.css" />
-    <script
-      src="https://kit.fontawesome.com/3e726f6a51.js"
-      crossorigin="anonymous"
-    ></script>
+    <title>SS Tex's Tax Inovice Generator</title>
   </head>
   <body>
-    <page size="A4">
-      <div class="main-grid">
-        <div class="header">
-          <b>TAX INVOICE</b> &nbsp; <span>ORIGINAL FOR RECIPIENT</span>
-        </div>
-        <div class="main-table">
-          <div class="item item1 ta-center">
-            <div></div>
-            <img src="media/SST Logo.png" alt="Logo" />
-            <!-- <div></div> -->
-            <div>
-              <p>
-                <span class="oname"><b>S. Tamilvanan</b></span> <br />
-                <span class="bname"><b>SS Tex</b></span> <br />
-                <span class="bslogan"
-                  >Your Partner in Innovative Textile Solutions!</span
-                >
-                <br />
-              </p>
-            </div>
-            <div>
-              <i class="fa-solid fa-phone"></i> 9443830191 <br />
-              <i class="fa-solid fa-envelope"></i> sstextamil@gmail.com
-            </div>
-            <div></div>
-          </div>
-          <div class="item item2">
-            <!-- ALL KINDS OF RING FRAME, ERECTION & SERVICE WORK. SPECIALIST IN: LR 6S, G5/1 & SUESSEN COMPACT -->
-            <span class="baddress"
-              >124, SMR Thoppu, Bethaniyapuram, Madurai - 625016.</span
-            >
-            <div class="bpan-bgst"><span>PAN: AGBPT6115E</span> <br /></div>
-            <span class="ta-right">GSTIN: 33AGBPT6115E1ZQ</span>
-          </div>
-          <div class="item item3">
-            BILL TO <br />
-            <span id="millName" class="fw-bold"></span> <br />
-            <span id="millAddress" class="fw-bold"></span> <br />
-            <b>GSTIN:</b> <span id="millGSTIN"></span> <br />
-          </div>
-          <div class="item item4">
-            <b>Invoice No:</b> <span id="invoiceNo"></span><span>/2024</span> <br />
-            <b>Invoice Date:</b> <span id="invoiceDate"></span>
-          </div>
-          <div class="item item5 bg-lgray ta-center fw-bold">S.NO.</div>
-          <div class="item item6 bg-lgray ta-center fw-bold">PARTICULARS</div>
-          <div class="item item7 bg-lgray ta-center fw-bold">HSN/SAC CODE</div>
-          <div class="item item8 bg-lgray ta-center fw-bold">QTY.</div>
-          <div class="item item9 bg-lgray ta-center fw-bold">
-            RATE <br />
-            Rs.
-          </div>
-          <div class="item item10 bg-lgray ta-center fw-bold">
-            AMOUNT <br />
-            Rs.
-          </div>
-          <div class="item item11 ta-center"></div>
-          <div class="item item12"></div>
-          <div class="item item13 ta-right"></div>
-          <div class="item item14 ta-right"></div>
-          <div class="item item15 ta-right"></div>
-          <div class="item item16 ta-right"></div>
-          <div class="item item17">
-            <span class="bbankdetails">
-              <b>BANK DETAILS</b> <br /><br />
-              BANK NAME: CANARA BANK <br />
-              ACCOUNT NUMBER: 6008201000002 <br />
-              IFSC CODE: CNRB0006008 <br />
-            </span>
-          </div>
-          <div class="item item18 bg-lgray fw-bold">TOTAL</div>
-          <div class="item item19 bg-lgray ta-right fw-bold">--price--</div>
-          <div class="item item20 fw-bold">IGST</div>
-          <div class="item item21 ta-right fw-bold">--gst price--</div>
-          <div class="item item22 fw-bold">CGST</div>
-          <div class="item item23 ta-right fw-bold">--gst price--</div>
-          <div class="item item24 fw-bold">SGST</div>
-          <div class="item item25 ta-right fw-bold">--gst price--</div>
-          <div class="item item28 ta-right fw-bold">TOTAL AMOUNT</div>
-          <div class="item item29 ta-right fw-bold">--tot price--</div>
-          <div class="item item30">
-            <b>Total Amount (in words)</b> <br />
-            --Amount--
-          </div>
-          <div class="item item31 ta-center fw-bold">
-            Yours Faithfully <br />
-            <br />
-            <br />
-            <br />
-            S. Tamilvanan
-          </div>
-          <div class="item item32 ta-center fw-bold">
-            ALL KINDS OF RING FRAME, ERECTION & SERVICE WORK. SPECIALIST IN: LR
-            6S, G5/1 & SUESSEN COMPACT.
-          </div>
-        </div>
-      </div>
-    </page>
+    <header>
+      <h1 class="ta-center">SS Tex's Tax Invoice Generator</h1>
+    </header>
+    <form id="form" method="" action="">
+      <table>
+        <tr>
+          <td><h3>BILL TO:</h3></td>
+        </tr>
+        <tr>
+          <td>Mill Name:</td>
+          <td><input id="millName" type="text" /></td>
+        </tr>
+        <tr>
+          <td>Mill Address:</td>
+          <td><textarea id="millAddress" type="text"></textarea></td>
+        </tr>
+        <tr>
+            <td>GSTIN:</td>
+            <td><input id="millGSTIN" type="text"></td>
+        </tr>
+        <tr>
+            <td>Invoice No:</td>
+            <td><input id="invoiceNo" type="text"></td>
+        </tr>
+        <tr>
+            <td>Invoice Date:</td>
+            <td><input id="invoiceDate" type="date" onchange="storeFormattedDate()"></td>
+        </tr>
+        <tr>
+            <td><br><button type="reset">RESET</button></td>
+            <td><br><button type="submit">SUBMIT</button></td>
+        </tr>
+      </table>
+    </form>
     <script src="index-script.js"></script>
   </body>
 </html>

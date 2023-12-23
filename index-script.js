@@ -1,11 +1,25 @@
-// const millName = localStorage.getItem('millName');
-// const millAddress = localStorage.getItem('millAddress');
-// const millGSTIN = localStorage.getItem('millGSTIN');
-// const invoiceNo = localStorage.getItem('invoiceNo');
-// const invoiceDate = localStorage.getItem('invoiceDate');
+const form = document.getElementById('form');
 
-document.getElementById('millName').textContent = localStorage.getItem('millName');
-document.getElementById('millAddress').textContent = localStorage.getItem('millAddress');
-document.getElementById('millGSTIN').textContent = localStorage.getItem('millGSTIN');
-document.getElementById('invoiceNo').textContent = localStorage.getItem('invoiceNo');
-document.getElementById('invoiceDate').textContent = localStorage.getItem('invoiceDate');
+// const millName = document.getElementById('millName');
+// const millAddress = document.getElementById('millAddress');
+// const millGSTIN = document.getElementById('millGSTIN');
+// const invoiceNo = document.getElementById('invoiceNo');
+// const invoiceDate = document.getElementById('invoiceDate');
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const millName = document.getElementById('millName').value;
+    const millAddress = document.getElementById('millAddress').value;
+    const millGSTIN = document.getElementById('millGSTIN').value;
+    const invoiceNo = document.getElementById('invoiceNo').value;
+    const invoiceDate = document.getElementById('invoiceDate').value;
+
+    localStorage.setItem('millName', millName);
+    localStorage.setItem('millAddress', millAddress);
+    localStorage.setItem('millGSTIN', millGSTIN);
+    localStorage.setItem('invoiceNo', invoiceNo);
+    localStorage.setItem('invoiceDate', invoiceDate);
+
+    window.location.href = "index.html";
+});
