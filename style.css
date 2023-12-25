@@ -212,6 +212,14 @@ page[size="A4"] {
 
 .index-html {
   background: linear-gradient(270deg, #cc4502, #24acde);
+  padding: 10px;
+}
+
+.index-html body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #millName {
@@ -224,10 +232,14 @@ page[size="A4"] {
 }
 
 #amountInWords {
-  width: 635px;
+  width: 612px;
 }
 
-#total, #igst, #cgst, #sgst, #totalAmount{
+#total,
+#igst,
+#cgst,
+#sgst,
+#totalAmount {
   width: 145px;
 }
 
@@ -244,7 +256,8 @@ page[size="A4"] {
 }
 
 .index-header h1 {
-  text-shadow: 0 1px 5px whitesmoke;
+  text-shadow: 0 1px 5px black;
+  color: white;
 }
 
 button {
