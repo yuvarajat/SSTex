@@ -199,18 +199,60 @@ page[size="A4"] {
   width: 400px;
 }
 
-.inputHsn{
+.inputHsn,.inputQty{
   width: 60px;
 }
 
-.inputQty{
-  width: 60px;
-}
-
-.inputRat{
+.inputRat,.inputAmo{
   width: 80px;
 }
 
-.inputAmo{
-  width: 80px;
+.index-html {
+  background: linear-gradient(270deg, #CC4502, #24ACDE);
+}
+
+#millName {
+  width: 300px;
+}
+
+#millAddress {
+  width: 300px;
+  height: 100px;
+}
+
+.sstex-logo {
+  width: 100px;
+  border-radius: 50%;
+}
+
+.index-header {
+  display: grid;
+  grid-template-columns: 150px auto;
+  align-content: center;
+  justify-content: center;
+}
+
+.index-header h1 {
+  text-shadow: 0 1px 5px whitesmoke;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
+}
+
+button[type="submit"] {
+  background-color: #4caf50; /* Green */
+  border-color: #2e7d3f;
+}
+
+/* Styles for the reset button */
+button[type="reset"] {
+  background-color: #f44336; /* Red */
+  border-color: #c62828;
 }
