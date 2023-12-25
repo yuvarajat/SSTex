@@ -53,7 +53,7 @@ page[size="A4"] {
   border: solid 1px;
   border-collapse: collapse;
   grid-template-columns: 50px 6fr 1fr 1fr repeat(2, 1.5fr);
-  grid-template-rows: auto 1fr auto auto 10fr repeat(4, auto);
+  grid-template-rows: repeat(4, min-content) 10fr repeat(4, min-content);
 }
 
 .item {
@@ -159,4 +159,8 @@ page[size="A4"] {
 
 .fw-bold {
   font-weight: bold;
+}
+
+.removeborder {
+  border: 0px solid;
 }
