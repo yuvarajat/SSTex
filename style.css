@@ -52,7 +52,7 @@ page[size="A4"] {
   display: grid;
   border: solid 1px;
   border-collapse: collapse;
-  grid-template-columns: 50px 1fr 80px 50px repeat(2, 90px);
+  grid-template-columns: 50px 1fr 80px 90px 50px 90px;
   grid-template-rows: auto 1fr auto auto 10fr repeat(4, auto);
 }
 
@@ -117,7 +117,7 @@ page[size="A4"] {
 .item11{
   grid-column: span 6;
   display: grid;
-  grid-template-columns: 50px 1fr 80px 50px repeat(2, 90px);
+  grid-template-columns: 50px 1fr 80px 90px 50px 90px;
   grid-template-rows: repeat(10, auto);
   padding: 0px;
   margin: -1px;
@@ -139,8 +139,13 @@ page[size="A4"] {
 }
 
 .item17 {
-  grid-column: span 4;
+  grid-column: span 3;
   grid-row: span 4;
+}
+
+
+.item18,.item20,.item22,.item24 {
+  grid-column: span 2;
 }
 
 .item28 {
@@ -208,8 +213,4 @@ page[size="A4"] {
 
 .inputAmo{
   width: 80px;
-}
-
-input {
-  height: 20px;
 }

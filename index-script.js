@@ -163,3 +163,25 @@ form.addEventListener('submit', function(e) {
 
     window.location.href = "bill.html";
 });
+
+function calculate(event) {
+    let targetId = event.target.id;
+    let index = targetId.slice(-1);
+
+    let qtyId = `qty${index}`;
+    let ratId = `rat${index}`;
+    let amoId = `amo${index}`;
+
+    let qtyInput = document.getElementById(qtyId);
+    let ratInput = document.getElementById(ratId);
+    let amoInput = document.getElementById(amoId);
+
+    // Extract the numeric part from the input values
+    let qtyValue = parseFloat(qtyInput.value) || 0; // Convert to float, default to 0 if not a valid number
+    let ratValue = parseFloat(ratInput.value) || 0;
+
+    let amount = qtyValue * ratValue;
+
+    // Update the amount field
+    amoInput.value = amount;
+}
