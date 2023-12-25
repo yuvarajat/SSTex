@@ -52,7 +52,7 @@ page[size="A4"] {
   display: grid;
   border: solid 1px;
   border-collapse: collapse;
-  grid-template-columns: 50px 6fr 1fr 1fr repeat(2, 1.5fr);
+  grid-template-columns: 50px 1fr 80px 50px repeat(2, 90px);
   grid-template-rows: auto 1fr auto auto 10fr repeat(4, auto);
 }
 
@@ -114,6 +114,30 @@ page[size="A4"] {
   grid-column: span 3;
 }
 
+.item11{
+  grid-column: span 6;
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 50px repeat(2, 90px);
+  grid-template-rows: repeat(10, auto);
+  padding: 0px;
+  margin: -1px;
+}
+
+.sub-item {
+  padding: 3px;
+  border-right: solid 1px black;
+  border-left: solid 1px black;
+  border-collapse: collapse;
+}
+
+.border-t{
+  border-top: solid 1px black;
+}
+
+.border-b{
+  border-bottom: solid 1px black;
+}
+
 .item17 {
   grid-column: span 4;
   grid-row: span 4;
@@ -159,4 +183,33 @@ page[size="A4"] {
 
 .fw-bold {
   font-weight: bold;
+}
+
+
+.inputSno{
+  width: 30px;
+}
+
+.inputPar{
+  width: 400px;
+}
+
+.inputHsn{
+  width: 60px;
+}
+
+.inputQty{
+  width: 60px;
+}
+
+.inputRat{
+  width: 80px;
+}
+
+.inputAmo{
+  width: 80px;
+}
+
+input {
+  height: 20px;
 }

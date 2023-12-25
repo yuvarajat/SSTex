@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SS Tex's Tax Inovice Generator</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <header>
@@ -35,10 +36,120 @@
             <td><input id="invoiceDate" type="date" onchange="storeFormattedDate()"></td>
         </tr>
         <tr>
+          <table>
+            <tr>
+              <th><br>S.No.</th>
+              <th>Particulars</th>
+              <th>HSN/SAC <br> Code</th>
+              <th>Quantity</th>
+              <th>Rate (Rs.)</th>
+              <th>Amount (Rs.)</th>
+            </tr>
+            <tr>
+              <td><input id="sno1" list="num" class="inputSno" type="text"></td>
+              <td><input id="par1" class="inputPar" type="text"></td>
+              <td><input id="hsn1" class="inputHsn" type="text"></td>
+              <td><input id="qty1" class="inputQty" type="text"></td>
+              <td><input id="rat1" class="inputRat" type="text"></td>
+              <td><input id="amo1" class="inputAmo" type="text"></td>
+            </tr>
+            <tr>
+              <td><input id="sno2" list="num" class="inputSno" type="text"></td>
+              <td><input id="par2" class="inputPar" type="text"></td>
+              <td><input id="hsn2" class="inputHsn" type="text"></td>
+              <td><input id="qty2" class="inputQty" type="text"></td>
+              <td><input id="rat2" class="inputRat" type="text"></td>
+              <td><input id="amo2" class="inputAmo" type="text"></td>
+          </tr>
+          
+          <tr>
+              <td><input id="sno3" list="num" class="inputSno" type="text"></td>
+              <td><input id="par3" class="inputPar" type="text"></td>
+              <td><input id="hsn3" class="inputHsn" type="text"></td>
+              <td><input id="qty3" class="inputQty" type="text"></td>
+              <td><input id="rat3" class="inputRat" type="text"></td>
+              <td><input id="amo3" class="inputAmo" type="text"></td>
+          </tr>
+          <tr>
+            <td><input id="sno4" list="num" class="inputSno" type="text"></td>
+            <td><input id="par4" class="inputPar" type="text"></td>
+            <td><input id="hsn4" class="inputHsn" type="text"></td>
+            <td><input id="qty4" class="inputQty" type="text"></td>
+            <td><input id="rat4" class="inputRat" type="text"></td>
+            <td><input id="amo4" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno5" list="num" class="inputSno" type="text"></td>
+            <td><input id="par5" class="inputPar" type="text"></td>
+            <td><input id="hsn5" class="inputHsn" type="text"></td>
+            <td><input id="qty5" class="inputQty" type="text"></td>
+            <td><input id="rat5" class="inputRat" type="text"></td>
+            <td><input id="amo5" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno6" list="num" class="inputSno" type="text"></td>
+            <td><input id="par6" class="inputPar" type="text"></td>
+            <td><input id="hsn6" class="inputHsn" type="text"></td>
+            <td><input id="qty6" class="inputQty" type="text"></td>
+            <td><input id="rat6" class="inputRat" type="text"></td>
+            <td><input id="amo6" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno7" list="num" class="inputSno" type="text"></td>
+            <td><input id="par7" class="inputPar" type="text"></td>
+            <td><input id="hsn7" class="inputHsn" type="text"></td>
+            <td><input id="qty7" class="inputQty" type="text"></td>
+            <td><input id="rat7" class="inputRat" type="text"></td>
+            <td><input id="amo7" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno8" list="num" class="inputSno" type="text"></td>
+            <td><input id="par8" class="inputPar" type="text"></td>
+            <td><input id="hsn8" class="inputHsn" type="text"></td>
+            <td><input id="qty8" class="inputQty" type="text"></td>
+            <td><input id="rat8" class="inputRat" type="text"></td>
+            <td><input id="amo8" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno9" list="num" class="inputSno" type="text"></td>
+            <td><input id="par9" class="inputPar" type="text"></td>
+            <td><input id="hsn9" class="inputHsn" type="text"></td>
+            <td><input id="qty9" class="inputQty" type="text"></td>
+            <td><input id="rat9" class="inputRat" type="text"></td>
+            <td><input id="amo9" class="inputAmo" type="text"></td>
+        </tr>
+        
+        <tr>
+            <td><input id="sno10" list="num" class="inputSno" type="text"></td>
+            <td><input id="par10" class="inputPar" type="text"></td>
+            <td><input id="hsn10" class="inputHsn" type="text"></td>
+            <td><input id="qty10" class="inputQty" type="text"></td>
+            <td><input id="rat10" class="inputRat" type="text"></td>
+            <td><input id="amo10" class="inputAmo" type="text"></td>
+        </tr>
+          </table>
+        <tr>
             <td><br><button type="reset">RESET</button></td>
             <td><br><button type="submit">SUBMIT</button></td>
         </tr>
       </table>
+      <datalist id="num">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </datalist>
     </form>
     <script src="index-script.js"></script>
   </body>
