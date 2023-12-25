@@ -237,6 +237,44 @@
             </tr>
           </table>
         </tr>
+        <tr>
+          <table>
+            <tr>
+              <th>Total</th>
+              <th>
+                IGST
+                <input
+                  type="checkbox"
+                  id="myCheckbox"
+                  onchange="calculateTA()"
+                />
+              </th>
+              <th>CGST</th>
+              <th>SGST</th>
+              <th>Total Amount</th>
+            </tr>
+            <br />
+            <tr>
+              <td><input id="total" type="text" disabled /></td>
+              <td><input id="igst" type="text" disabled /></td>
+              <td><input id="cgst" type="text" disabled /></td>
+              <td><input id="sgst" type="text" disabled /></td>
+              <td><input id="totalAmount" type="text" disabled /></td>
+            </tr>
+          </table>
+        </tr>
+
+        <tr>
+          <th><br /><b>Amount (in words):</b></th>
+          <td>
+            <input
+              id="amountInWords"
+              type="text"
+              onchange="calculateTA"
+              disabled
+            />
+          </td>
+        </tr>
 
         <tr>
           <td><br /><button type="reset">RESET</button></td>

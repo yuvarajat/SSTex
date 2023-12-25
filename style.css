@@ -114,7 +114,7 @@ page[size="A4"] {
   grid-column: span 3;
 }
 
-.item11{
+.item11 {
   grid-column: span 6;
   display: grid;
   grid-template-columns: 50px 1fr 80px 90px 50px 90px;
@@ -130,11 +130,11 @@ page[size="A4"] {
   border-collapse: collapse;
 }
 
-.border-t{
+.border-t {
   border-top: solid 1px black;
 }
 
-.border-b{
+.border-b {
   border-bottom: solid 1px black;
 }
 
@@ -143,8 +143,10 @@ page[size="A4"] {
   grid-row: span 4;
 }
 
-
-.item18,.item20,.item22,.item24 {
+.item18,
+.item20,
+.item22,
+.item24 {
   grid-column: span 2;
 }
 
@@ -190,25 +192,26 @@ page[size="A4"] {
   font-weight: bold;
 }
 
-
-.inputSno{
+.inputSno {
   width: 35px;
 }
 
-.inputPar{
+.inputPar {
   width: 400px;
 }
 
-.inputHsn,.inputQty{
+.inputHsn,
+.inputQty {
   width: 60px;
 }
 
-.inputRat,.inputAmo{
+.inputRat,
+.inputAmo {
   width: 80px;
 }
 
 .index-html {
-  background: linear-gradient(270deg, #CC4502, #24ACDE);
+  background: linear-gradient(270deg, #cc4502, #24acde);
 }
 
 #millName {
@@ -218,6 +221,10 @@ page[size="A4"] {
 #millAddress {
   width: 300px;
   height: 100px;
+}
+
+#amountInWords {
+  width: 623px;
 }
 
 .sstex-logo {
