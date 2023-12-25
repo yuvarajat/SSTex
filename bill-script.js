@@ -4,6 +4,19 @@
 // const invoiceNo = localStorage.getItem('invoiceNo');
 // const invoiceDate = localStorage.getItem('invoiceDate');
 
+function convertDateFormat(inputDate) {
+  // Parse the input date
+  const parts = inputDate.split("-");
+  const year = parts[0];
+  const month = parts[1];
+  const day = parts[2];
+
+  // Create a new date string in the desired format
+  const outputDate = `${day}-${month}-${year}`;
+
+  return outputDate;
+}
+
 document.getElementById("millName").textContent =
   localStorage.getItem("millName");
 document.getElementById("millAddress").textContent =
@@ -12,8 +25,9 @@ document.getElementById("millGSTIN").textContent =
   localStorage.getItem("millGSTIN");
 document.getElementById("invoiceNo").textContent =
   localStorage.getItem("invoiceNo");
-document.getElementById("invoiceDate").textContent =
-  localStorage.getItem("invoiceDate");
+document.getElementById("invoiceDate").textContent = convertDateFormat(
+  localStorage.getItem("invoiceDate")
+);
 
 document.getElementById("sno1").textContent = localStorage.getItem("sno1");
 document.getElementById("par1").textContent = localStorage.getItem("par1");
