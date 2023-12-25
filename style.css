@@ -224,7 +224,11 @@ page[size="A4"] {
 }
 
 #amountInWords {
-  width: 623px;
+  width: 635px;
+}
+
+#total, #igst, #cgst, #sgst, #totalAmount{
+  width: 145px;
 }
 
 .sstex-logo {
