@@ -235,14 +235,6 @@ page[size="A4"] {
   width: 612px;
 }
 
-<--#total,
-#igst,
-#cgst,
-#sgst,
-#totalAmount {
-  width: 145px;
-}-->
-
 .sstex-logo {
   width: 100px;
   border-radius: 50%;
