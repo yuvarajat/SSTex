@@ -104,7 +104,7 @@ document.getElementById("igst").textContent = localStorage.getItem("igst");
 document.getElementById("cgst").textContent = localStorage.getItem("cgst");
 document.getElementById("sgst").textContent = localStorage.getItem("sgst");
 document.getElementById("totalAmount").textContent =
-  localStorage.getItem("totalAmount");
+  localStorage.getItem("totalAmount") + "/-";
 
 document.getElementById("amountInWords").textContent =
   localStorage.getItem("amountInWords") + " " + "Rupees Only";
