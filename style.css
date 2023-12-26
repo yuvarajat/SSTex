@@ -272,3 +272,7 @@ button[type="reset"] {
   background-color: #f44336; /* Red */
   border-color: #c62828;
 }
+
+td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
+  width: 145px;
+}
