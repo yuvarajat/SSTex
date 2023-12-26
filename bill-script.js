@@ -108,3 +108,21 @@ document.getElementById("totalAmount").textContent =
 
 document.getElementById("amountInWords").textContent =
   localStorage.getItem("amountInWords") + " " + "Rupees Only";
+
+function printPage() {
+    window.print();
+}
+
+function toggleContent(buttonId, spanId) {
+    const buttonText = document.getElementById(buttonId);
+    const spanContent = document.getElementById(spanId);
+
+    // Toggle content between "DUPLICATE FOR RECORDS" and "ORIGINAL FOR RECIPIENT"
+    if (buttonText.textContent === 'ORIGINAL FOR RECIPIENT') {
+      buttonText.textContent = 'DUPLICATE FOR RECORDS';
+      spanContent.textContent = 'DUPLICATE FOR RECORDS';
+    } else {
+      buttonText.textContent = 'ORIGINAL FOR RECIPIENT';
+      spanContent.textContent = 'ORIGINAL FOR RECIPIENT';
+    }
+  }

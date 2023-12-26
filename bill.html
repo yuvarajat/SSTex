@@ -15,7 +15,7 @@
     <page size="A4">
       <div class="main-grid">
         <div class="header">
-          <b>TAX INVOICE</b> &nbsp; <span>ORIGINAL FOR RECIPIENT</span>
+          <b>TAX INVOICE</b> &nbsp; <span id="oORd">ORIGINAL FOR RECIPIENT</span>
         </div>
         <div class="main-table">
           <div class="item item1 ta-center">
@@ -167,6 +167,11 @@
         </div>
       </div>
     </page>
+    <br><br><br>
+    <div class="print-button">
+      <button type="button" id="toggler" onclick="toggleContent('toggler', 'oORd')">ORIGINAL FOR RECIPIENT</button>
+      <button type="button" onclick="printPage()">Print</button>
+    </div>
     <script src="bill-script.js"></script>
   </body>
 </html>

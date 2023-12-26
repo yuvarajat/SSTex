@@ -277,6 +277,28 @@ button[type="reset"] {
   border-color: #c62828;
 }
 
+button[type="button"] {
+  background-color: #4caf50;
+  border-color: #2e7d3f;
+}
+
+#toggler {
+  background-color: #3498db;
+  border-color: #1f618d;
+}
+
+.print-button {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+}
+
 td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
   width: 145px;
+}
+
+@media print {
+  button[type="button"] {
+    display: none;
+  }
 }
