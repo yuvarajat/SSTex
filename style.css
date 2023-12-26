@@ -150,11 +150,6 @@ page[size="A4"] {
   grid-column: span 2;
 }
 
-.item19, .item21, .item23, .item25 {
-grid-column: span 1;
-width: 90px;
-}
-
 .item28 {
   grid-column: span 5;
 }
@@ -240,13 +235,13 @@ width: 90px;
   width: 612px;
 }
 
-#total,
+<--#total,
 #igst,
 #cgst,
 #sgst,
 #totalAmount {
   width: 145px;
-}
+}-->
 
 .sstex-logo {
   width: 100px;
