@@ -302,3 +302,8 @@ td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
     display: none;
   }
 }
+
+/* .bill-margin-padding {
+  margin: 0;
+  padding: 0;
+} */

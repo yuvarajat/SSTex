@@ -126,3 +126,17 @@ function toggleContent(buttonId, spanId) {
       spanContent.textContent = 'ORIGINAL FOR RECIPIENT';
     }
   }
+
+  function printToPDF() {
+    var element = document.querySelector('.main-grid');
+
+    const options = {
+        margin: 0,
+        filename: 'SS Tex Invoice.pdf',
+        image: {type: 'jpeg', quality: 0.98},
+        html2canvas: {scale: 3},
+        jsPDF: {unit: 'cm', format: 'a4', orientation: 'portrait'}
+    };
+
+    html2pdf(element, options);
+}

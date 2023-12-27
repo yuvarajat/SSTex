@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bill-margin-padding">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.5" />
     <title>SS Tex Invoice</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="media/SST Logo.png" type="image/x-icon" />
@@ -10,8 +10,9 @@
       src="https://kit.fontawesome.com/3e726f6a51.js"
       crossorigin="anonymous"
     ></script>
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
   </head>
-  <body>
+  <body class="bill-margin-padding">
     <page size="A4">
       <div class="main-grid">
         <div class="header">
@@ -170,7 +171,8 @@
     <br><br><br>
     <div class="print-button">
       <button type="button" id="toggler" onclick="toggleContent('toggler', 'oORd')">ORIGINAL FOR RECIPIENT</button>
-      <button type="button" onclick="printPage()">Print</button>
+      <button id="printButton" type="button" onclick="printToPDF()">Download</button>
+      <button id="printButton" type="button" onclick="printPage()">Print</button>
     </div>
     <script src="bill-script.js"></script>
   </body>
