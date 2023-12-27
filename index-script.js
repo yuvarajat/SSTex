@@ -329,3 +329,24 @@ function updateHSN(event){
 
     hsnInput.value = 9987;
 }
+
+function capitalizeFirstLetter(event) {
+    var inputValue = event.target.value;
+
+      // Capitalize the first letter of each word and update the input value
+      var capitalizedValue = inputValue.replace(/\b\w/g, function(match) {
+        return match.toUpperCase();
+      });
+
+      event.target.value = capitalizedValue;
+  }
+
+  function capitalizeAllLetters(event) {
+    // Access the current value of the input element
+    var inputValue = event.target.value;
+
+    // Capitalize all letters and update the input value
+    var capitalizedValue = inputValue.toUpperCase();
+
+    event.target.value = capitalizedValue;
+  }
