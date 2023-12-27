@@ -317,3 +317,15 @@ function calculateTA() {
   localStorage.setItem("amountInWords", amountInWords);
   document.getElementById("amountInWords").value = amountInWords;
 }
+
+
+function updateHSN(event){
+    let targetId = event.target.id;
+    let index = targetId.slice(3);
+
+    let hsnId = `hsn${index}`;
+
+    let hsnInput = document.getElementById(hsnId);
+
+    hsnInput.value = 9987;
+}
