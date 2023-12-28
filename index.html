@@ -22,15 +22,15 @@
         </tr>
         <tr>
           <td class="fw-bold">Mill Name:</td>
-          <td><input id="millName" type="text" oninput="capitalizeFirstLetter(event)"/></td>
+          <td><input id="millName" type="text" oninput="capitalizeFirstLetter(event)" required/></td>
         </tr>
         <tr>
           <td class="fw-bold">Mill Address:</td>
-          <td><textarea id="millAddress" type="text" oninput="capitalizeFirstLetter(event)"></textarea></td>
+          <td><textarea id="millAddress" type="text" oninput="capitalizeFirstLetter(event)" required></textarea></td>
         </tr>
         <tr>
           <td class="fw-bold">GSTIN:</td>
-          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST(); calculateTA()"/></td>
+          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST(); calculateTA()" required/></td>
         </tr>
         <tr>
           <td class="fw-bold">Place Of Supply:</td>
@@ -38,7 +38,7 @@
         </tr>
         <tr>
           <td class="fw-bold">Invoice No:</td>
-          <td><input id="invoiceNo" type="text" /></td>
+          <td><input id="invoiceNo" type="text" required/></td>
         </tr>
         <tr>
           <td class="fw-bold">Invoice Date:</td>
@@ -47,6 +47,7 @@
               id="invoiceDate"
               type="date"
               onchange="storeFormattedDate()"
+              required
             />
           </td>
         </tr>
@@ -69,7 +70,7 @@
                   disabled
                 />
               </td>
-              <td><input id="par1" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="par1" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)" required/></td>
               <td><input id="hsn1" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
@@ -77,6 +78,7 @@
                   class="inputRat"
                   type="text"
                   oninput="calculate(event)"
+                  required
                 />
               </td>
               <td>
@@ -85,6 +87,7 @@
                   class="inputQty"
                   type="text"
                   oninput="calculate(event)"
+                  required
                 />
               </td>
               <td><input id="amo1" class="inputAmo" type="text" disabled /></td>
