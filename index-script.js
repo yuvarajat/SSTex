@@ -14,6 +14,7 @@ form.addEventListener("submit", function (e) {
   const millGSTIN = document.getElementById("millGSTIN").value;
   const invoiceNo = document.getElementById("invoiceNo").value;
   const invoiceDate = document.getElementById("invoiceDate").value;
+  const placeOfSupply = document.getElementById("placeOfSupply").value;
 
   const sno1 = document.getElementById("sno1").value;
   const par1 = document.getElementById("par1").value;
@@ -90,6 +91,7 @@ form.addEventListener("submit", function (e) {
   localStorage.setItem("millGSTIN", millGSTIN);
   localStorage.setItem("invoiceNo", invoiceNo);
   localStorage.setItem("invoiceDate", invoiceDate);
+  localStorage.setItem("placeOfSupply", placeOfSupply);
 
   localStorage.setItem("sno1", sno1);
   localStorage.setItem("par1", par1);

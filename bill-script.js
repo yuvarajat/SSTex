@@ -25,6 +25,8 @@ document.getElementById("millGSTIN").textContent =
   localStorage.getItem("millGSTIN");
 document.getElementById("invoiceNo").textContent =
   localStorage.getItem("invoiceNo");
+document.getElementById("placeOfSupply").textContent =
+  localStorage.getItem("placeOfSupply");
 document.getElementById("invoiceDate").textContent = convertDateFormat(
   localStorage.getItem("invoiceDate")
 );
