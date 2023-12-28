@@ -105,10 +105,10 @@ page[size="A4"] {
   justify-self: left;
 }
 
-.bbankdetails {
-  grid-column: span 1;
-  justify-self: right;
+.bbankdetails, .postaladdress {
+  align-self: center;
 }
+
 
 .item3 {
   grid-column: span 3;
@@ -153,6 +153,14 @@ page[size="A4"] {
 .item17 {
   grid-column: span 3;
   grid-row: span 4;
+  display: grid;
+  grid-template-columns: auto 20px auto;
+  padding: 0px;
+  padding-left: 10px;
+}
+
+.bank-empty-postal {
+  border-left: solid 2px black;
 }
 
 .item18,
@@ -297,7 +305,7 @@ button[type="button"] {
 
 .print-button {
   display: flex;
-  width: 19.7cm;
+  width: 100vw;
   justify-content: center;
 }
 
