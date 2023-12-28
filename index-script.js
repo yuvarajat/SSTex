@@ -321,15 +321,18 @@ function calculateTA() {
 }
 
 
-function updateHSN(event){
-    let targetId = event.target.id;
-    let index = targetId.slice(3);
+function updateSNoHSN(event){
+  let targetId = event.target.id;
+  let index = targetId.slice(3);
 
-    let hsnId = `hsn${index}`;
+  let snoId = `sno${index}`;
+  let hsnId = `hsn${index}`;
 
-    let hsnInput = document.getElementById(hsnId);
+  let snoInput = document.getElementById(snoId);
+  let hsnInput = document.getElementById(hsnId);
 
-    hsnInput.value = 9987;
+  snoInput.value = index;
+  hsnInput.value = 9987;
 }
 
 function capitalizeFirstLetter(event) {

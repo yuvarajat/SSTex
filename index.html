@@ -30,7 +30,7 @@
         </tr>
         <tr>
           <td class="fw-bold">GSTIN:</td>
-          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST()"/></td>
+          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST(); calculateTA()"/></td>
         </tr>
         <tr>
           <td class="fw-bold">Place Of Supply:</td>
@@ -64,14 +64,13 @@
               <td>
                 <input
                   id="sno1"
-                  list="num"
                   class="inputSno"
                   type="text"
-                  value="1"
+                  disabled
                 />
               </td>
-              <td><input id="par1" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn1" class="inputHsn" type="text" /></td>
+              <td><input id="par1" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn1" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat1"
@@ -92,10 +91,10 @@
             </tr>
             <tr>
               <td>
-                <input id="sno2" list="num" class="inputSno" type="text" />
+                <input id="sno2" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par2" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn2" class="inputHsn" type="text" /></td>
+              <td><input id="par2" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn2" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat2"
@@ -117,10 +116,10 @@
 
             <tr>
               <td>
-                <input id="sno3" list="num" class="inputSno" type="text" />
+                <input id="sno3" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par3" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn3" class="inputHsn" type="text" /></td>
+              <td><input id="par3" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn3" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat3"
@@ -141,10 +140,10 @@
             </tr>
             <tr>
               <td>
-                <input id="sno4" list="num" class="inputSno" type="text" />
+                <input id="sno4" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par4" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn4" class="inputHsn" type="text" /></td>
+              <td><input id="par4" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn4" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat4"
@@ -166,10 +165,10 @@
 
             <tr>
               <td>
-                <input id="sno5" list="num" class="inputSno" type="text" />
+                <input id="sno5" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par5" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn5" class="inputHsn" type="text" /></td>
+              <td><input id="par5" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn5" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat5"
@@ -191,10 +190,10 @@
 
             <tr>
               <td>
-                <input id="sno6" list="num" class="inputSno" type="text" />
+                <input id="sno6" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par6" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn6" class="inputHsn" type="text" /></td>
+              <td><input id="par6" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn6" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat6"
@@ -216,10 +215,10 @@
 
             <tr>
               <td>
-                <input id="sno7" list="num" class="inputSno" type="text" />
+                <input id="sno7" class="inputSno" type="text" disabled/>
               </td>
-              <td><input id="par7" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn7" class="inputHsn" type="text" /></td>
+              <td><input id="par7" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
+              <td><input id="hsn7" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat7"
@@ -241,10 +240,10 @@
 
             <tr>
               <td>
-                <input id="sno8" list="num" class="inputSno" type="text" />
+                <input id="sno8" class="inputSno" type="text" disabled/>
               </td>
               <td><input id="par8" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn8" class="inputHsn" type="text" /></td>
+              <td><input id="hsn8" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat8"
@@ -266,10 +265,10 @@
 
             <tr>
               <td>
-                <input id="sno9" list="num" class="inputSno" type="text" />
+                <input id="sno9" class="inputSno" type="text" disabled/>
               </td>
               <td><input id="par9" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn9" class="inputHsn" type="text" /></td>
+              <td><input id="hsn9" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat9"
@@ -291,10 +290,10 @@
 
             <tr>
               <td>
-                <input id="sno10" list="num" class="inputSno" type="text" />
+                <input id="sno10" class="inputSno" type="text" disabled/>
               </td>
               <td><input id="par10" class="inputPar" type="text" onkeydown="updateHSN(event)" oninput="capitalizeFirstLetter(event)"/></td>
-              <td><input id="hsn10" class="inputHsn" type="text" /></td>
+              <td><input id="hsn10" class="inputHsn" type="text" disabled/></td>
               <td>
                 <input
                   id="rat10"

@@ -112,7 +112,15 @@ page[size="A4"] {
 
 .item3 {
   grid-column: span 3;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  grid-template-rows: repeat(2, min-content);
 }
+
+.bill-item1 {
+  grid-column: span 2;
+}
+
 
 .item4 {
   grid-column: span 3;
