@@ -30,7 +30,11 @@
         </tr>
         <tr>
           <td class="fw-bold">GSTIN:</td>
-          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)"/></td>
+          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST()"/></td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Place Of Supply:</td>
+          <td><input id="placeOfSupply" type="text" disabled></td>
         </tr>
         <tr>
           <td class="fw-bold">Invoice No:</td>

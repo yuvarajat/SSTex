@@ -350,3 +350,144 @@ function capitalizeFirstLetter(event) {
 
     event.target.value = capitalizedValue;
   }
+
+  function validateGST() {
+    var gstInput = document.getElementById('millGSTIN').value.toUpperCase();
+    var gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
+
+    if (gstRegex.test(gstInput)) {
+      stateCode = gstInput.substring(0, 2);
+      var checkBox = document.getElementById('myCheckbox');
+
+      // Map state codes to place of supply information
+    switch (stateCode) {
+      case '01':
+        placeOfSupply = 'Jammu and Kashmir';
+        break;
+      case '02':
+        placeOfSupply = 'Himachal Pradesh';
+        break;
+      case '03':
+        placeOfSupply = 'Punjab';
+        break;
+      case '04':
+        placeOfSupply = 'Chandigarh';
+        break;
+      case '05':
+        placeOfSupply = 'Uttarakhand';
+        break;
+      case '06':
+        placeOfSupply = 'Haryana';
+        break;
+      case '07':
+        placeOfSupply = 'Delhi';
+        break;
+      case '08':
+        placeOfSupply = 'Rajasthan';
+        break;
+      case '09':
+        placeOfSupply = 'Uttar Pradesh';
+        break;
+      case '10':
+        placeOfSupply = 'Bihar';
+        break;
+      case '11':
+        placeOfSupply = 'Sikkim';
+        break;
+      case '12':
+        placeOfSupply = 'Arunachal Pradesh';
+        break;
+      case '13':
+        placeOfSupply = 'Nagaland';
+        break;
+      case '14':
+        placeOfSupply = 'Manipur';
+        break;
+      case '15':
+        placeOfSupply = 'Mizoram';
+        break;
+      case '16':
+        placeOfSupply = 'Tripura';
+        break;
+      case '17':
+        placeOfSupply = 'Meghalaya';
+        break;
+      case '18':
+        placeOfSupply = 'Assam';
+        break;
+      case '19':
+        placeOfSupply = 'West Bengal';
+        break;
+      case '20':
+        placeOfSupply = 'Jharkhand';
+        break;
+      case '21':
+        placeOfSupply = 'Orissa';
+        break;
+      case '22':
+        placeOfSupply = 'Chhattisgarh';
+        break;
+      case '23':
+        placeOfSupply = 'Madhya Pradesh';
+        break;
+      case '24':
+        placeOfSupply = 'Gujarat';
+        break;
+      case '25':
+        placeOfSupply = 'Daman and Diu';
+        break;
+      case '26':
+        placeOfSupply = 'Dadra and Nagar Haveli';
+        break;
+      case '27':
+        placeOfSupply = 'Maharashtra';
+        break;
+      case '28':
+        placeOfSupply = 'Andhra Pradesh';
+        break;
+      case '29':
+        placeOfSupply = 'Karnataka';
+        break;
+      case '30':
+        placeOfSupply = 'Goa';
+        break;
+      case '31':
+        placeOfSupply = 'Lakshadweep';
+        break;
+      case '32':
+        placeOfSupply = 'Kerala';
+        break;
+      case '33':
+        placeOfSupply = 'Tamil Nadu';
+        break;
+      case '34':
+        placeOfSupply = 'Puducherry';
+        break;
+      case '35':
+        placeOfSupply = 'Andaman and Nicobar Islands';
+        break;
+      case '36':
+        placeOfSupply = 'Telangana';
+        break;
+      case '37':
+        placeOfSupply = 'Andhra Pradesh (New)';
+        break;
+      case '97':
+        placeOfSupply = 'Other Territories';
+        break;
+      default:
+        placeOfSupply = 'Place of Supply information not available for this state code.';
+    }
+
+    document.getElementById('placeOfSupply').value = placeOfSupply;
+    if (placeOfSupply === 'Tamil Nadu') {
+      checkBox.checked = false;
+    } else {
+      checkBox.checked = true;
+    }
+    } else {
+      window.alert('Invalid GST Number. Please check the format.');
+      document.getElementById('placeOfSupply').value = "";
+      document.getElementById('millGSTIN').value = "";
+    }
+  }
