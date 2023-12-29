@@ -49,6 +49,7 @@ page[size="A4"] {
 .main-table {
   width: 19.7cm;
   height: 27.7cm;
+  overflow: hidden;
   display: grid;
   border: solid 1px;
   border-collapse: collapse;
