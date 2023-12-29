@@ -214,20 +214,24 @@ page[size="A4"] {
 
 .inputSno {
   width: 35px;
+  height: 70px;
 }
 
 .inputPar {
   width: 400px;
+  height: 70px;
 }
 
 .inputHsn,
 .inputQty {
   width: 60px;
+  height: 70px;
 }
 
 .inputRat,
 .inputAmo {
   width: 80px;
+  height: 70px;
 }
 
 .index-html {
