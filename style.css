@@ -326,9 +326,24 @@ td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
   .main-table{
     overflow: hidden;
   }
+
+  .item11 {
+    overflow: hidden;
+  }
 }
 
 /* .bill-margin-padding {
   margin: 0;
   padding: 0;
 } */
+
+input:focus {
+  background-color: #e0f7fa; /* Set the background color you want when focused */
+  border: 1px solid #00bcd4; /* Set the border color you want when focused */
+}
+
+/* Styles for textarea when in focus */
+textarea:focus {
+  background-color: #e0f7fa; /* Set the background color you want when focused */
+  border: 1px solid #00bcd4; /* Set the border color you want when focused */
+}
