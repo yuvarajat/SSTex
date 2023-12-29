@@ -327,7 +327,7 @@ td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
     display: none;
   }
 
-  .item11 {
+  .main-table{
     overflow: hidden;
   }
 }
