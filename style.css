@@ -326,6 +326,10 @@ td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
   button[type="button"] {
     display: none;
   }
+
+  .item11 {
+    overflow: hidden;
+  }
 }
 
 /* .bill-margin-padding {
