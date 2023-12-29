@@ -89,6 +89,10 @@ page[size="A4"] {
   font-size: 14px;
 }
 
+.bsite {
+  font-size: 15.5px;
+}
+
 .item2 {
   grid-column: 1/-1;
   display: grid;
