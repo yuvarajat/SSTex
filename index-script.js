@@ -178,6 +178,7 @@ function numberToWords(number) {
     "Seven",
     "Eight",
     "Nine",
+    "Ten",
   ];
   const teens = [
     "Eleven",
@@ -206,7 +207,7 @@ function numberToWords(number) {
   function convertLessThanOneThousand(n) {
     if (n === 0) {
       return "";
-    } else if (n < 10) {
+    } else if (n <= 10) {
       return units[n];
     } else if (n < 20) {
       return teens[n - 11];
