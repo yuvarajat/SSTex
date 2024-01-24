@@ -7,6 +7,10 @@
     <title>Login To SS Tex Invoice App</title>
 </head>
 <body id="login-body">
+    <div class="loading-overlay"></div>
+    <div class="loading-overlay-image-container">
+        <img src="media/loading.gif" class="loading-overlay-img" alt="loading">
+    </div>
     <div class="login-container">
         <img src="media/SST Logo.png" class="login-logo" alt="Logo">
         <h1>SS TEX Invoice</h1>
@@ -26,10 +30,14 @@ form.addEventListener("submit", function (e) {
     const password = document.getElementById("password");
     const emailValue = document.getElementById("email").value;
     const passwordValue = document.getElementById("password").value;
+    const loadingOverlay = document.querySelector(".loading-overlay");
+    const loadingOverlayImageContainer = document.querySelector(".loading-overlay-image-container");
 
     if ((emailValue === "sstextamil@gmail.com" && passwordValue === "sstex@123") ||
         (emailValue === "sstexraja@gmail.com" && passwordValue === "sstex@123")) {
-        window.location.href = "calc.html";
+            setTimeout(() => window.location.href = "calc.html", 2000);
+            loadingOverlay.style.display = "block";
+            loadingOverlayImageContainer.style.display = "block";
     } else {
         alert("Email / Password is incorrect...!");
         password.value = "";
