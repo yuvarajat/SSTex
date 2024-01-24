@@ -35,7 +35,10 @@ form.addEventListener("submit", function (e) {
 
     if ((emailValue === "sstextamil@gmail.com" && passwordValue === "sstex@123") ||
         (emailValue === "sstexraja@gmail.com" && passwordValue === "sstex@123")) {
-            setTimeout(() => window.location.href = "calc.html", 2000);
+            setTimeout(() => {
+                loadingOverlay.style.display = "none";
+                loadingOverlayImageContainer.style.display = "none";
+                window.location.href = "calc.html", 2000});
             loadingOverlay.style.display = "block";
             loadingOverlayImageContainer.style.display = "block";
     } else {
