@@ -181,18 +181,18 @@ page[size="A4"] {
 }
 
 .item30 {
-  grid-column: span 4;
+  grid-column: span 3;
   padding: 15px;
 }
 
 .item31 {
-  grid-column: span 2;
+  grid-column: span 3;
   grid-row: span 2;
   padding: 15px;
 }
 
 .item32 {
-  grid-column: span 4;
+  grid-column: span 3;
 }
 
 .main-table img {
