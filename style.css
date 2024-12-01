@@ -146,6 +146,7 @@ page[size="A4"] {
   border-right: solid 1px black;
   border-left: solid 1px black;
   border-collapse: collapse;
+  word-wrap: break-word;
 }
 
 .border-t {
