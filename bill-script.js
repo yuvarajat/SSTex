@@ -130,7 +130,7 @@ function toggleContent(buttonId, spanId) {
   }
 
   function printToPDF() {
-    var element = document.querySelector('page');
+    var element = document.querySelector('.main-grid');
 
     const options = {
         margin: 0,
