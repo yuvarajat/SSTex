@@ -4,8 +4,9 @@ import { fillCustomer, readCustomer, validateCustomer } from "./invoice-data.js"
 const pageStatus = document.getElementById("pageStatus");
 const rupees = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
 
-function showStatus(element, message) {
+function showStatus(element, message, loading = false) {
   element.textContent = message;
+  element.classList.toggle("is-loading", loading);
   element.hidden = !message;
 }
 
@@ -47,7 +48,7 @@ function setupCatalog({ database, databaseSdk }, { path, form, label, read, fill
     const fields = [...form.elements];
     fields.forEach((field) => { field.disabled = true; });
     list.inert = true;
-    showStatus(formStatus, `Saving ${label} to Firebase…`);
+    showStatus(formStatus, `Saving ${label} to Firebase…`, true);
     try {
       await set(destination, record);
       stopEditing();
@@ -68,10 +69,13 @@ function setupCatalog({ database, databaseSdk }, { path, form, label, read, fill
       const details = document.createElement("div");
       const heading = document.createElement("strong");
       heading.textContent = title(record);
-      details.append(heading, document.createElement("br"), summary(record));
+      const metadata = document.createElement("small");
+      metadata.textContent = summary(record);
+      details.append(heading, metadata);
 
       const editButton = document.createElement("button");
       editButton.type = "button";
+      editButton.className = "button button-secondary";
       editButton.textContent = "Edit";
       editButton.setAttribute("aria-label", `Edit ${title(record)}`);
       editButton.addEventListener("click", () => {
@@ -131,7 +135,7 @@ async function start() {
   setupCatalog(firebase, { ...catalog, form });
 
   document.querySelector("[data-private]").hidden = false;
-  pageStatus.hidden = true;
+  showStatus(pageStatus, "");
 }
 
-start().catch((error) => { pageStatus.textContent = error.message; });
+start().catch((error) => showStatus(pageStatus, error.message));

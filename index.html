@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Login To SS Tex Invoice App</title>
-</head>
-<body id="login-body">
-    <div class="loading-overlay"></div>
-    <div class="loading-overlay-image-container">
-        <img src="media/loading.gif" class="loading-overlay-img" alt="loading">
-    </div>
-    <div class="login-container">
-        <img src="media/SST Logo.png" class="login-logo" alt="Logo">
-        <h1>SS TEX Invoice</h1>
-        <form action="" class="login-form">
-            <input type="email" id="email" class="login-input login-email" placeholder=" Email" aria-label="Email" autocomplete="username" required>
-            <input type="password" id="password" class="login-input login-password" placeholder=" Password" aria-label="Password" autocomplete="current-password" required>
-            <button type="submit" class="login-submit" disabled>Login</button>
-            <p id="loginStatus" role="status">Connecting to Firebase…</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="icon" href="media/SST Logo.png" />
+    <title>Sign in | SS Tex Invoice</title>
+  </head>
+  <body class="workspace login-page">
+    <main class="login-card">
+      <img class="login-photo" src="media/login-background.jpeg" alt="" />
+      <div class="login-content">
+        <div class="brand">
+          <img src="media/SST Logo.png" alt="" width="44" height="44" />
+          <span>SS Tex</span>
+        </div>
+        <h1>Sign in</h1>
+        <form class="login-form field-stack">
+          <label class="field">Email
+            <input type="email" id="email" autocomplete="username" required />
+          </label>
+          <label class="field">Password
+            <input type="password" id="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit" class="button button-primary" disabled>Sign in</button>
+          <p id="loginStatus" class="app-status is-loading" role="status">Connecting to Firebase…</p>
         </form>
-    </div>
+      </div>
+    </main>
     <script type="module" src="login.js"></script>
-</body>
+  </body>
 </html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.5" />
     <title>SS Tex Invoice</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="loading.css" />
     <link rel="icon" href="media/SST Logo.png" type="image/x-icon" />
     <script
       src="https://kit.fontawesome.com/3e726f6a51.js"
@@ -14,7 +15,7 @@
   </head>
   <body class="bill-margin-padding">
     <div class="bill-notice" id="billNotice">
-      <p id="pageStatus" role="status">Loading invoice…</p>
+      <p id="pageStatus" class="is-loading" role="status">Loading invoice…</p>
       <button id="retrySave" type="button" hidden>Retry save</button>
       <a id="editPending" hidden>Correct invoice number</a>
       <a id="backToHistory" href="history.html" hidden>Invoice History</a>

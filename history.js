@@ -6,9 +6,10 @@ const pageStatus = document.getElementById("pageStatus");
 const historyStatus = document.getElementById("historyStatus");
 const rupees = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
 
-function showHistoryStatus(message) {
-  historyStatus.textContent = message;
-  historyStatus.hidden = !message;
+function showStatus(element, message) {
+  element.textContent = message;
+  element.classList.remove("is-loading");
+  element.hidden = !message;
 }
 
 function makeLink(number, href) {
@@ -32,8 +33,7 @@ function showPending(uid) {
     }));
     document.getElementById("legacyInvoice").hidden = !readLegacyInvoice();
   } catch {
-    pageStatus.hidden = false;
-    pageStatus.textContent = "This browser could not read locally saved invoices.";
+    showStatus(pageStatus, "This browser could not read locally saved invoices.");
   }
 }
 
@@ -42,7 +42,7 @@ async function start() {
   if (!firebase) return;
   const { database, databaseSdk, user } = firebase;
   document.querySelector("[data-private]").hidden = false;
-  pageStatus.hidden = true;
+  showStatus(pageStatus, "");
   showPending(user.uid);
   window.addEventListener("storage", () => showPending(user.uid));
   const { onValue, orderByChild, query, ref } = databaseSdk;
@@ -60,10 +60,10 @@ async function start() {
     });
     document.getElementById("invoiceList").replaceChildren(...rows.reverse());
     document.getElementById("invoiceTable").hidden = rows.length === 0;
-    showHistoryStatus(rows.length ? "" : "No saved invoices yet.");
+    showStatus(historyStatus, rows.length ? "" : "No saved invoices yet.");
   }, (error) => {
-    showHistoryStatus(databaseError(error, "Could not load saved invoices. Check your connection and reload."));
+    showStatus(historyStatus, databaseError(error, "Could not load saved invoices. Check your connection and reload."));
   });
 }
 
-start().catch((error) => { pageStatus.textContent = error.message; });
+start().catch((error) => showStatus(pageStatus, error.message));

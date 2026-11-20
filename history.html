@@ -1,42 +1,40 @@
 <!DOCTYPE html>
-<html class="index-html" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Invoice History | SS Tex</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="workspace.css" />
     <link rel="icon" href="media/SST Logo.png" />
   </head>
-  <body>
-    <header class="index-header">
-      <img class="sstex-logo" src="media/SST Logo.png" alt="SS Tex" />
-      <h1>Invoice History</h1>
-    </header>
-    <p id="pageStatus" class="app-status" role="status">Signing in…</p>
-    <main class="entry-content" data-private hidden>
-      <nav class="app-nav" aria-label="Invoice app">
-        <div class="app-tabs"></div>
-        <button id="signOut" type="button">Sign out</button>
-      </nav>
-      <section id="pendingSection" hidden>
-        <h2>Pending on this device</h2>
-        <p>Open a pending invoice to save it to Firebase.</p>
-        <ul id="pendingList" class="entry-list"></ul>
-      </section>
-      <p id="historyStatus" class="app-status" role="status">Loading saved invoices…</p>
-      <div id="invoiceTable" class="table-scroll" role="region" aria-label="Saved invoices" tabindex="0" hidden>
-        <table class="history-table">
-          <thead><tr>
-            <th scope="col">Invoice No.</th>
-            <th scope="col">Date</th>
-            <th scope="col">Customer</th>
-            <th scope="col">Total</th>
-          </tr></thead>
-          <tbody id="invoiceList"></tbody>
-        </table>
-      </div>
-      <p id="legacyInvoice" hidden><a href="bill.html">View the last invoice from this browser</a></p>
-    </main>
+  <body class="workspace">
+    <nav class="app-nav" aria-label="Invoice app"></nav>
+    <div class="workspace-content">
+      <header class="page-heading"><h1>Invoice History</h1></header>
+      <p id="pageStatus" class="app-status is-loading" role="status">Signing in…</p>
+      <main data-private hidden>
+        <section id="pendingSection" class="panel pending-panel" hidden>
+          <h2>Pending on this device</h2>
+          <p>Open a pending invoice to save it to Firebase.</p>
+          <ul id="pendingList" class="entry-list"></ul>
+        </section>
+        <section class="panel history-panel" aria-label="Saved invoices">
+          <p id="historyStatus" class="list-status is-loading" role="status">Loading saved invoices…</p>
+          <div id="invoiceTable" class="table-scroll" tabindex="0" role="region" aria-label="Invoice table" hidden>
+            <table class="history-table">
+              <thead><tr>
+                <th scope="col">Invoice no.</th>
+                <th scope="col">Date</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Total</th>
+              </tr></thead>
+              <tbody id="invoiceList"></tbody>
+            </table>
+          </div>
+        </section>
+        <p id="legacyInvoice" hidden><a href="bill.html">View the last invoice from this browser</a></p>
+      </main>
+    </div>
     <script type="module" src="app-tabs.js"></script>
     <script type="module" src="history.js"></script>
   </body>

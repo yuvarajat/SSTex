@@ -1,102 +1,125 @@
 <!DOCTYPE html>
-<html class="index-html" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SS Tex's Tax Invoice Generator</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="media/SST Logo.png" type="image/x-icon" />
+    <title>New Invoice | SS Tex</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="icon" href="media/SST Logo.png" />
   </head>
-  <body>
-    <header class="index-header">
-      <img class="sstex-logo" src="media/SST Logo.png" alt="logo" />
-      <h1 class="ta-center">
-        SS Tex's <br />
-        Invoice Generator
-      </h1>
-    </header>
-    <p id="pageStatus" class="app-status" role="status">Signing in…</p>
-    <main class="entry-content" data-private hidden>
-      <nav class="app-nav" aria-label="Invoice app">
-        <div class="app-tabs"></div>
-        <button id="signOut" type="button">Sign out</button>
-      </nav>
-      <p id="catalogStatus" class="app-status" role="status" hidden></p>
-
-      <form id="form">
-        <h3>BILL TO:</h3>
-        <div class="customer-fields">
-          <label for="customerPicker">Saved customer</label>
-          <select id="customerPicker" disabled><option value="">Enter details manually</option></select>
-          <label for="millName">Mill Name</label>
-          <input id="millName" name="customerName" type="text" maxlength="160" required />
-          <label for="millAddress">Mill Address</label>
-          <textarea id="millAddress" name="customerAddress" maxlength="500" rows="3" required></textarea>
-          <label for="millGSTIN">GSTIN</label>
-          <input id="millGSTIN" name="gstin" type="text" maxlength="15" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]" required />
-          <label for="placeOfSupply">Place of Supply</label>
-          <input id="placeOfSupply" type="text" readonly />
-          <label for="invoiceNo">Invoice No.</label>
-          <div class="number-field">
-            <input id="invoiceNo" type="text" maxlength="40" required />
-            <span id="yearSuffix"></span>
+  <body class="workspace">
+    <nav class="app-nav" aria-label="Invoice app"></nav>
+    <div class="workspace-content">
+      <header class="page-heading"><h1>New Invoice</h1></header>
+      <p id="pageStatus" class="app-status is-loading" role="status">Signing in…</p>
+      <main data-private hidden>
+        <p id="catalogStatus" class="app-status" role="status" hidden></p>
+        <form id="form" class="invoice-form">
+          <div class="invoice-details">
+            <section class="panel" aria-labelledby="billToHeading">
+              <h2 id="billToHeading">Bill to</h2>
+              <div class="field-grid">
+                <label class="field">Saved customer
+                  <select id="customerPicker" disabled><option value="">Enter details manually</option></select>
+                </label>
+                <label class="field">Mill name
+                  <input id="millName" name="customerName" type="text" maxlength="160" required />
+                </label>
+                <label class="field field-wide">Billing address
+                  <textarea id="millAddress" name="customerAddress" maxlength="500" rows="2" required></textarea>
+                </label>
+                <label class="field">GSTIN
+                  <input id="millGSTIN" name="gstin" type="text" spellcheck="false" autocapitalize="characters" maxlength="15" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]" required />
+                </label>
+                <label class="field">Place of supply
+                  <input id="placeOfSupply" type="text" readonly />
+                </label>
+              </div>
+            </section>
+            <section class="panel" aria-labelledby="invoiceDetailsHeading">
+              <h2 id="invoiceDetailsHeading">Invoice details</h2>
+              <div class="field-stack">
+                <label class="field" for="invoiceNo">Invoice number
+                  <span class="number-field">
+                    <input id="invoiceNo" type="text" maxlength="40" required />
+                    <span id="yearSuffix"></span>
+                  </span>
+                </label>
+                <label class="field">Invoice date
+                  <input id="invoiceDate" type="date" min="2000-01-01" max="9999-12-31" required />
+                </label>
+                <label class="tax-switch"><input id="myCheckbox" type="checkbox" /> Apply IGST</label>
+              </div>
+            </section>
           </div>
-          <label for="invoiceDate">Invoice Date</label>
-          <input id="invoiceDate" type="date" min="2000-01-01" max="9999-12-31" required />
-        </div>
 
-        <div class="table-scroll" tabindex="0" role="region" aria-label="Invoice line items">
-          <table class="entry-items">
-            <thead>
-              <tr>
-                <th scope="col">S.No.</th>
-                <th scope="col">Particulars</th>
-                <th scope="col">HSN/SAC<br />Code</th>
-                <th scope="col">Rate<br />(Rs.)</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">GST %</th>
-                <th scope="col">Amount<br />(Rs.)</th>
-              </tr>
-            </thead>
-            <tbody id="lineItems"></tbody>
-          </table>
-        </div>
+          <section class="panel items-panel" aria-labelledby="itemsHeading">
+            <div class="panel-heading"><h2 id="itemsHeading">Line items</h2></div>
+            <div class="table-scroll" tabindex="0" role="region" aria-label="Invoice line items">
+              <table class="entry-items">
+                <thead>
+                  <tr>
+                    <th scope="col">Line</th>
+                    <th scope="col">Particulars</th>
+                    <th scope="col">HSN/SAC</th>
+                    <th scope="col">Rate (₹)</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">GST %</th>
+                    <th scope="col">Amount (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="lineItems"></tbody>
+              </table>
+            </div>
+            <div class="items-actions">
+              <button id="addLine" type="button" class="button button-secondary"><span aria-hidden="true">+</span> Add line item</button>
+            </div>
+          </section>
 
-        <div class="totals">
-          <label>Total <input id="total" readonly /></label>
-          <label>IGST <input id="igst" readonly /></label>
-          <label>CGST <input id="cgst" readonly /></label>
-          <label>SGST <input id="sgst" readonly /></label>
-          <label>Total Amount <input id="totalAmount" readonly /></label>
-        </div>
-        <label class="tax-switch"><input id="myCheckbox" type="checkbox" /> Apply IGST</label>
-        <label class="amount-in-words">Amount (in words) <input id="amountInWords" readonly /></label>
-        <p id="formStatus" class="app-status" role="status" hidden></p>
-        <button type="reset">RESET</button>
-        <button type="submit">SUBMIT</button>
-      </form>
-    </main>
+          <section class="panel summary-panel" aria-labelledby="totalsHeading">
+            <h2 id="totalsHeading">Invoice totals</h2>
+            <div class="summary-grid">
+              <div class="totals">
+                <label>Subtotal <input id="total" readonly /></label>
+                <label>IGST <input id="igst" readonly /></label>
+                <label>CGST <input id="cgst" readonly /></label>
+                <label>SGST <input id="sgst" readonly /></label>
+              </div>
+              <div class="grand-total">
+                <label for="totalAmount">Total amount</label>
+                <div class="grand-total-value"><span aria-hidden="true">₹</span><input id="totalAmount" readonly /></div>
+              </div>
+            </div>
+            <label class="field amount-in-words">Amount in words <input id="amountInWords" readonly /></label>
+          </section>
+
+          <p id="formStatus" class="app-status" role="status" hidden></p>
+          <div class="form-actions">
+            <button type="reset" class="button button-secondary">Reset form</button>
+            <button type="submit" class="button button-primary">Generate invoice</button>
+          </div>
+        </form>
+      </main>
+      <footer class="workspace-footer">
+        <span>© 2026 SS Tex. All rights reserved.</span>
+        <span>Developed by <a href="https://www.linkedin.com/in/yuvarajat/">Yuvaraja Tamilvanan</a></span>
+      </footer>
+    </div>
+
     <template id="lineTemplate">
       <tr>
-        <th scope="row" data-serial></th>
-        <td>
+        <th scope="row"><span class="line-number" data-serial></span></th>
+        <td class="line-description">
           <select data-field="service" aria-label="Saved service" disabled><option value="">Enter service manually</option></select>
-          <textarea data-field="description" aria-label="Particulars" maxlength="500" rows="2"></textarea>
+          <textarea data-field="description" aria-label="Particulars" placeholder="Enter service description" maxlength="500" rows="2"></textarea>
         </td>
         <td data-label="HSN/SAC"><input data-field="hsn" aria-label="HSN/SAC code" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" value="9987" /></td>
-        <td data-label="Rate (Rs.)"><input data-field="rate" aria-label="Rate" type="number" min="0" max="999999999.99" step="0.01" /></td>
+        <td data-label="Rate (₹)"><input data-field="rate" aria-label="Rate" type="number" min="0" max="999999999.99" step="0.01" /></td>
         <td data-label="Quantity"><input data-field="quantity" aria-label="Quantity" type="number" min="0.001" max="999999.999" step="0.001" /></td>
         <td data-label="GST %"><input data-field="gstPercent" aria-label="GST percentage" type="number" min="0" max="100" step="0.01" value="18" /></td>
-        <td data-label="Amount (Rs.)"><input data-field="amount" aria-label="Amount" readonly /></td>
+        <td data-label="Amount (₹)"><input data-field="amount" aria-label="Amount" readonly /></td>
       </tr>
     </template>
-    <br /><br /><br /><br />
-    <h3 class="ta-center">
-      © 2026 - SS Tex. All Rights Reserved. <br /><br />
-      Built with HTML, CSS & JavaScript. <br /><br />
-      Developed by
-      <a href="https://www.linkedin.com/in/yuvarajat/">Yuvaraja Tamilvanan</a>
-    </h3>
     <script type="module" src="app-tabs.js"></script>
     <script type="module" src="index-script.js"></script>
   </body>

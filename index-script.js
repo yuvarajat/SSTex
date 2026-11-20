@@ -15,10 +15,14 @@ const invoiceDate = document.getElementById("invoiceDate");
 const invoiceNo = document.getElementById("invoiceNo");
 const gstin = form.elements.gstin;
 const interState = document.getElementById("myCheckbox");
+const lineItems = document.getElementById("lineItems");
+const addLine = document.getElementById("addLine");
 const rows = [];
+let visibleLines = 1;
 
-function status(element, message) {
+function status(element, message, loading = false) {
   element.textContent = message;
+  element.classList.toggle("is-loading", loading);
   element.hidden = !message;
 }
 
@@ -31,7 +35,6 @@ function refreshCustomer() {
 
 function createRows() {
   const template = document.getElementById("lineTemplate");
-  const body = document.getElementById("lineItems");
   for (let number = 1; number <= MAX_ITEMS; number++) {
     const row = template.content.firstElementChild.cloneNode(true);
     row.querySelector("[data-serial]").textContent = number;
@@ -41,8 +44,17 @@ function createRows() {
       field.setAttribute("aria-label", `${field.getAttribute("aria-label")}, line ${number}`);
     }
     rows.push(fields);
-    body.append(row);
+    lineItems.append(row);
   }
+  showLines(visibleLines);
+}
+
+function showLines(count) {
+  visibleLines = count;
+  for (const [index, row] of Array.from(lineItems.rows).entries()) {
+    row.hidden = index >= count;
+  }
+  addLine.hidden = count === MAX_ITEMS;
 }
 
 function readItems(validate = false) {
@@ -97,7 +109,9 @@ function restorePending(invoice) {
   refreshFinancialYear();
   refreshCustomer();
   interState.checked = invoice.interState;
-  for (const [index, item] of Object.entries(invoice.items)) {
+  const items = Object.entries(invoice.items);
+  showLines(Math.max(1, ...items.map(([index]) => Number(index))));
+  for (const [index, item] of items) {
     const row = rows[Number(index) - 1];
     for (const key of ["description", "hsn", "rate", "quantity", "gstPercent"]) {
       row[key].value = item[key];
@@ -178,8 +192,13 @@ async function start() {
     }
   }
   watchCatalog(firebase);
+  refreshTotals();
   document.querySelector("[data-private]").hidden = false;
   status(pageStatus, "");
+  addLine.addEventListener("click", () => {
+    showLines(visibleLines + 1);
+    rows[visibleLines - 1].description.focus();
+  });
   form.addEventListener("input", (event) => {
     const field = event.target;
     field.setCustomValidity?.("");
@@ -198,6 +217,7 @@ async function start() {
   form.addEventListener("reset", () => {
     setTimeout(() => {
       for (const field of form.elements) field.setCustomValidity?.("");
+      showLines(1);
       refreshFinancialYear();
       refreshCustomer();
       status(formStatus, "");
@@ -239,7 +259,7 @@ async function start() {
     try {
       queueInvoice(user.uid, invoice);
     } catch {
-      status(formStatus, "Local storage is unavailable. Keep this page open while Firebase saves the invoice…");
+      status(formStatus, "Local storage is unavailable. Keep this page open while Firebase saves the invoice…", true);
       try {
         await saveInvoice(firebase, invoice);
         location.assign(invoiceLink(invoiceKey(invoice.invoiceNo)));

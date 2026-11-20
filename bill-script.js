@@ -10,8 +10,9 @@ const retryButton = document.getElementById("retrySave");
 const editLink = document.getElementById("editPending");
 const historyLink = document.getElementById("backToHistory");
 
-function showStatus(message) {
+function showStatus(message, loading = false) {
   status.textContent = message;
+  status.classList.toggle("is-loading", loading);
   notice.hidden = !message;
 }
 
@@ -71,9 +72,9 @@ function syncPending(firebase, invoice) {
   async function sync() {
     retryButton.hidden = true;
     editLink.hidden = true;
-    showStatus("Saved on this device. Saving to Firebase…");
+    showStatus("Saved on this device. Saving to Firebase…", true);
     const waiting = setTimeout(() => {
-      showStatus("Saved on this device. Waiting for Firebase to confirm the save…");
+      showStatus("Saved on this device. Waiting for Firebase to confirm the save…", true);
     }, 6000);
     try {
       await saveInvoice(firebase, invoice);

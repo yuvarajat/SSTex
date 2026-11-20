@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html class="index-html" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Service Items | SS Tex</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="workspace.css" />
     <link rel="icon" href="media/SST Logo.png" />
   </head>
-  <body>
-    <header class="index-header">
-      <img class="sstex-logo" src="media/SST Logo.png" alt="SS Tex" />
-      <h1>Service Items</h1>
-    </header>
-    <p id="pageStatus" class="app-status" role="status">Signing in…</p>
-    <main class="entry-content" data-private hidden>
-      <nav class="app-nav" aria-label="Invoice app">
-        <div class="app-tabs"></div>
-        <button id="signOut" type="button">Sign out</button>
-      </nav>
-
-      <section class="catalog-grid" aria-label="Service catalog">
-        <form id="serviceForm">
-          <label>Service description <textarea name="description" maxlength="500" rows="2" required></textarea></label>
-          <label>Unit price (₹) <input name="rate" type="number" min="0" max="999999999.99" step="0.01" required /></label>
-          <label>HSN/SAC code <input name="hsn" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" value="9987" required /></label>
-          <label>GST % <input name="gstPercent" type="number" min="0" max="100" step="0.01" value="18" required /></label>
-          <button type="submit">Save service</button>
-          <button type="button" data-cancel hidden>Cancel edit</button>
-          <p class="app-status" data-form-status role="status" hidden></p>
-        </form>
-        <div>
-          <h2>Saved services</h2>
-          <p class="app-status" data-list-status role="status">Loading services…</p>
-          <ul class="entry-list" data-records></ul>
-        </div>
-      </section>
-    </main>
+  <body class="workspace">
+    <nav class="app-nav" aria-label="Invoice app"></nav>
+    <div class="workspace-content">
+      <header class="page-heading"><h1>Service Items</h1></header>
+      <p id="pageStatus" class="app-status is-loading" role="status">Signing in…</p>
+      <main data-private hidden>
+        <section class="catalog-grid" aria-label="Service catalog">
+          <form id="serviceForm" class="panel">
+            <h2>Service details</h2>
+            <div class="field-grid">
+              <label class="field field-wide">Service description <textarea name="description" maxlength="500" rows="2" required></textarea></label>
+              <label class="field">Unit price (₹) <input name="rate" type="number" min="0" max="999999999.99" step="0.01" required /></label>
+              <label class="field">HSN/SAC code <input name="hsn" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" value="9987" required /></label>
+              <label class="field">GST % <input name="gstPercent" type="number" min="0" max="100" step="0.01" value="18" required /></label>
+              <div class="catalog-actions field-wide">
+                <button type="submit" class="button button-primary">Save service</button>
+                <button type="button" class="button button-secondary" data-cancel hidden>Cancel edit</button>
+              </div>
+              <p class="app-status field-wide" data-form-status role="status" hidden></p>
+            </div>
+          </form>
+          <div class="panel list-panel">
+            <h2>Saved services</h2>
+            <p class="app-status is-loading" data-list-status role="status">Loading services…</p>
+            <ul class="entry-list" data-records></ul>
+          </div>
+        </section>
+      </main>
+    </div>
     <script type="module" src="app-tabs.js"></script>
     <script type="module" src="catalog.js"></script>
   </body>

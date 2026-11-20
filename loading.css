@@ -1,0 +1,25 @@
+.is-loading {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.is-loading::before {
+  content: "";
+  box-sizing: border-box;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: loading-spin .75s linear infinite;
+}
+
+@keyframes loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-loading::before { animation: none; }
+}
