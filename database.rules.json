@@ -1,0 +1,150 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "invoices": {
+      ".read": "auth != null && root.child('members').child(auth.uid).val() == true",
+      ".indexOn": [
+        "savedAt"
+      ],
+      "$invoice": {
+        ".write": "auth != null && root.child('members').child(auth.uid).val() == true && !data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['schemaVersion', 'submissionId', 'invoiceNo', 'invoiceDate', 'customer', 'interState', 'items', 'totals', 'savedAt'])",
+        "schemaVersion": {
+          ".validate": "newData.val() == 1"
+        },
+        "submissionId": {
+          ".validate": "newData.isString() && newData.val().length >= 36 && newData.val().length <= 36 && newData.val().matches(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/)"
+        },
+        "invoiceNo": {
+          ".validate": "newData.isString() && newData.val().length >= 7 && newData.val().length <= 46 && newData.val().matches(/^.+\\/[0-9]{2}-[0-9]{2}$/)"
+        },
+        "invoiceDate": {
+          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 10 && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+        },
+        "customer": {
+          ".validate": "newData.hasChildren(['name', 'address', 'gstin', 'placeOfSupply'])",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 160"
+          },
+          "address": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+          },
+          "gstin": {
+            ".validate": "newData.isString() && newData.val().length >= 15 && newData.val().length <= 15 && newData.val().matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/)"
+          },
+          "placeOfSupply": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "interState": {
+          ".validate": "newData.isBoolean()"
+        },
+        "items": {
+          ".validate": "newData.hasChildren()",
+          "$row": {
+            ".validate": "$row.matches(/^([1-9]|10)$/) && newData.hasChildren(['description', 'hsn', 'rate', 'gstPercent', 'quantity', 'amount'])",
+            "description": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+            },
+            "hsn": {
+              ".validate": "newData.isString() && newData.val().length >= 4 && newData.val().length <= 8 && newData.val().matches(/^[0-9]{4,8}$/)"
+            },
+            "rate": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999.99"
+            },
+            "gstPercent": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+            },
+            "quantity": {
+              ".validate": "newData.isNumber() && newData.val() >= 0.001 && newData.val() <= 999999.999"
+            },
+            "amount": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "totals": {
+          ".validate": "newData.hasChildren(['subtotal', 'igst', 'cgst', 'sgst', 'grandTotal', 'amountInWords'])",
+          "subtotal": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+          },
+          "igst": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+          },
+          "cgst": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+          },
+          "sgst": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+          },
+          "grandTotal": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
+          },
+          "amountInWords": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 240"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "savedAt": {
+          ".validate": "newData.isNumber() && newData.val() == now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "customers": {
+      ".read": "auth != null && root.child('members').child(auth.uid).val() == true",
+      "$customer": {
+        ".write": "auth != null && root.child('members').child(auth.uid).val() == true && newData.exists()",
+        ".validate": "newData.hasChildren(['name', 'address', 'gstin', 'placeOfSupply'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 160"
+        },
+        "address": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+        },
+        "gstin": {
+          ".validate": "newData.isString() && newData.val().length >= 15 && newData.val().length <= 15 && newData.val().matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/)"
+        },
+        "placeOfSupply": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "services": {
+      ".read": "auth != null && root.child('members').child(auth.uid).val() == true",
+      "$service": {
+        ".write": "auth != null && root.child('members').child(auth.uid).val() == true && newData.exists()",
+        ".validate": "newData.hasChildren(['description', 'hsn', 'rate', 'gstPercent'])",
+        "description": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+        },
+        "hsn": {
+          ".validate": "newData.isString() && newData.val().length >= 4 && newData.val().length <= 8 && newData.val().matches(/^[0-9]{4,8}$/)"
+        },
+        "rate": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999.99"
+        },
+        "gstPercent": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}

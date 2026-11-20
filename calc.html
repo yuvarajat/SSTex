@@ -2,8 +2,8 @@
 <html class="index-html" lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
-    <title>SS Tex's Tax Inovice Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SS Tex's Tax Invoice Generator</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="media/SST Logo.png" type="image/x-icon" />
   </head>
@@ -15,371 +15,82 @@
         Invoice Generator
       </h1>
     </header>
-    <form id="form" method="" action="">
-      <table>
-        <tr>
-          <td><h3>BILL TO:</h3></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Mill Name:</td>
-          <td><input id="millName" type="text" oninput="capitalizeFirstLetter(event)" required/></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Mill Address:</td>
-          <td><textarea id="millAddress" type="text" oninput="capitalizeFirstLetter(event)" required></textarea></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">GSTIN:</td>
-          <td><input id="millGSTIN" type="text" oninput="capitalizeAllLetters(event)" onchange="validateGST(); calculateTA()" required/></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Place Of Supply:</td>
-          <td><input id="placeOfSupply" type="text" disabled></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Invoice No:</td>
-          <td><input id="invoiceNo" type="text" required/></td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Invoice Date:</td>
-          <td>
-            <input
-              id="invoiceDate"
-              type="date"
-              onchange="storeFormattedDate()"
-              required
-            />
-          </td>
-        </tr>
-        <tr>
-          <table>
-            <tr>
-              <th><br />S.No.</th>
-              <th>Particulars</th>
-              <th>HSN/SAC<br />Code</th>
-              <th>Rate<br />(Rs.)</th>
-              <th>Quantity</th>
-              <th>Amount<br />(Rs.)</th>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  id="sno1"
-                  class="inputSno"
-                  type="text"
-                  disabled
-                />
-              </td>
-              <td><textarea id="par1" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)" required/></textarea></td></td>
-              <td><input id="hsn1" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat1"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                  required
-                />
-              </td>
-              <td>
-                <input
-                  id="qty1"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                  required
-                />
-              </td>
-              <td><input id="amo1" class="inputAmo" type="text" disabled /></td>
-            </tr>
-            <tr>
-              <td>
-                <input id="sno2" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par2" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn2" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat2"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty2"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo2" class="inputAmo" type="text" disabled /></td>
-            </tr>
+    <p id="pageStatus" class="app-status" role="status">Signing in…</p>
+    <main class="entry-content" data-private hidden>
+      <nav class="app-nav" aria-label="Invoice app">
+        <a href="history.html">Invoice History</a>
+        <a href="catalog.html">Customers &amp; Services</a>
+        <button id="signOut" type="button">Sign out</button>
+      </nav>
+      <p id="catalogStatus" class="app-status" role="status" hidden></p>
 
-            <tr>
-              <td>
-                <input id="sno3" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par3" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn3" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat3"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty3"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo3" class="inputAmo" type="text" disabled /></td>
-            </tr>
-            <tr>
-              <td>
-                <input id="sno4" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par4" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn4" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat4"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty4"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo4" class="inputAmo" type="text" disabled /></td>
-            </tr>
+      <form id="form">
+        <h3>BILL TO:</h3>
+        <div class="customer-fields">
+          <label for="customerPicker">Saved customer</label>
+          <select id="customerPicker" disabled><option value="">Enter details manually</option></select>
+          <label for="millName">Mill Name</label>
+          <input id="millName" name="customerName" type="text" maxlength="160" required />
+          <label for="millAddress">Mill Address</label>
+          <textarea id="millAddress" name="customerAddress" maxlength="500" rows="3" required></textarea>
+          <label for="millGSTIN">GSTIN</label>
+          <input id="millGSTIN" name="gstin" type="text" maxlength="15" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]" required />
+          <label for="placeOfSupply">Place of Supply</label>
+          <input id="placeOfSupply" type="text" readonly />
+          <label for="invoiceNo">Invoice No.</label>
+          <div class="number-field">
+            <input id="invoiceNo" type="text" maxlength="40" required />
+            <span id="yearSuffix"></span>
+          </div>
+          <label for="invoiceDate">Invoice Date</label>
+          <input id="invoiceDate" type="date" min="2000-01-01" max="9999-12-31" required />
+        </div>
 
-            <tr>
-              <td>
-                <input id="sno5" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par5" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn5" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat5"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty5"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo5" class="inputAmo" type="text" disabled /></td>
-            </tr>
-
-            <tr>
-              <td>
-                <input id="sno6" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par6" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn6" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat6"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty6"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo6" class="inputAmo" type="text" disabled /></td>
-            </tr>
-
-            <tr>
-              <td>
-                <input id="sno7" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par7" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn7" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat7"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty7"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo7" class="inputAmo" type="text" disabled /></td>
-            </tr>
-
-            <tr>
-              <td>
-                <input id="sno8" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par8" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn8" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat8"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty8"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo8" class="inputAmo" type="text" disabled /></td>
-            </tr>
-
-            <tr>
-              <td>
-                <input id="sno9" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par9" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn9" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat9"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty9"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td><input id="amo9" class="inputAmo" type="text" disabled /></td>
-            </tr>
-
-            <tr>
-              <td>
-                <input id="sno10" class="inputSno" type="text" disabled/>
-              </td>
-              <td><textarea id="par10" class="inputPar" type="text" onkeydown="updateSNoHSN(event)" oninput="capitalizeFirstLetter(event)"/></textarea></td>
-              <td><input id="hsn10" class="inputHsn" type="text" disabled/></td>
-              <td>
-                <input
-                  id="rat10"
-                  class="inputRat"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input
-                  id="qty10"
-                  class="inputQty"
-                  type="text"
-                  oninput="calculate(event)"
-                />
-              </td>
-              <td>
-                <input id="amo10" class="inputAmo" type="text" disabled />
-              </td>
-            </tr>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Invoice line items">
+          <table class="entry-items">
+            <thead>
+              <tr>
+                <th scope="col">S.No.</th>
+                <th scope="col">Particulars</th>
+                <th scope="col">HSN/SAC<br />Code</th>
+                <th scope="col">Rate<br />(Rs.)</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">GST %</th>
+                <th scope="col">Amount<br />(Rs.)</th>
+              </tr>
+            </thead>
+            <tbody id="lineItems"></tbody>
           </table>
-        </tr>
-        <tr>
-          <table>
-            <tr>
-              <th>Total</th>
-              <th>
-                IGST
-                <input
-                  type="checkbox"
-                  id="myCheckbox"
-                  onchange="calculateTA()"
-                />
-              </th>
-              <th>CGST</th>
-              <th>SGST</th>
-              <th>Total Amount</th>
-            </tr>
-            <br />
-            <tr>
-              <td><input id="total" type="text" disabled /></td>
-              <td><input id="igst" type="text" disabled /></td>
-              <td><input id="cgst" type="text" disabled /></td>
-              <td><input id="sgst" type="text" disabled /></td>
-              <td><input id="totalAmount" type="text" disabled /></td>
-            </tr>
-          </table>
-        </tr>
+        </div>
 
-        <tr>
-          <th><br /><b>Amount (in words):</b></th>
-          <td>
-            <input
-              id="amountInWords"
-              type="text"
-              onchange="calculateTA"
-              disabled
-            />
-          </td>
-        </tr>
-
-        <tr>
-          <td><br /><button type="reset">RESET</button></td>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <td><button type="submit">SUBMIT</button></td>
-        </tr>
-      </table>
-      <datalist id="num">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-      </datalist>
-      <datalist id="par">
-        <option value=""></option>
-      </datalist>
-    </form>
+        <div class="totals">
+          <label>Total <input id="total" readonly /></label>
+          <label>IGST <input id="igst" readonly /></label>
+          <label>CGST <input id="cgst" readonly /></label>
+          <label>SGST <input id="sgst" readonly /></label>
+          <label>Total Amount <input id="totalAmount" readonly /></label>
+        </div>
+        <label class="tax-switch"><input id="myCheckbox" type="checkbox" /> Apply IGST</label>
+        <label class="amount-in-words">Amount (in words) <input id="amountInWords" readonly /></label>
+        <p id="formStatus" class="app-status" role="status" hidden></p>
+        <button type="reset">RESET</button>
+        <button type="submit">SUBMIT</button>
+      </form>
+    </main>
+    <template id="lineTemplate">
+      <tr>
+        <th scope="row" data-serial></th>
+        <td>
+          <select data-field="service" aria-label="Saved service" disabled><option value="">Enter service manually</option></select>
+          <textarea data-field="description" aria-label="Particulars" maxlength="500" rows="2"></textarea>
+        </td>
+        <td data-label="HSN/SAC"><input data-field="hsn" aria-label="HSN/SAC code" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" value="9987" /></td>
+        <td data-label="Rate (Rs.)"><input data-field="rate" aria-label="Rate" type="number" min="0" max="999999999.99" step="0.01" /></td>
+        <td data-label="Quantity"><input data-field="quantity" aria-label="Quantity" type="number" min="0.001" max="999999.999" step="0.001" /></td>
+        <td data-label="GST %"><input data-field="gstPercent" aria-label="GST percentage" type="number" min="0" max="100" step="0.01" value="18" /></td>
+        <td data-label="Amount (Rs.)"><input data-field="amount" aria-label="Amount" readonly /></td>
+      </tr>
+    </template>
     <br /><br /><br /><br />
     <h3 class="ta-center">
       © 2026 - SS Tex. All Rights Reserved. <br /><br />
@@ -387,6 +98,6 @@
       Developed by
       <a href="https://www.linkedin.com/in/yuvarajat/">Yuvaraja Tamilvanan</a>
     </h3>
-    <script src="index-script.js"></script>
+    <script type="module" src="index-script.js"></script>
   </body>
 </html>

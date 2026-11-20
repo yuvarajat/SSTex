@@ -1,144 +1,136 @@
-// const millName = localStorage.getItem('millName');
-// const millAddress = localStorage.getItem('millAddress');
-// const millGSTIN = localStorage.getItem('millGSTIN');
-// const invoiceNo = localStorage.getItem('invoiceNo');
-// const invoiceDate = localStorage.getItem('invoiceDate');
+import { databaseError, requireAccount } from "./firebase.js";
+import { formatInvoiceDate, invoiceKey, MAX_ITEMS } from "./invoice-data.js";
+import {
+  invoiceLink, readLegacyInvoice, readPendingInvoice, removePendingInvoice, saveInvoice,
+} from "./invoice-store.js";
 
-function convertDateFormat(inputDate) {
-  // Parse the input date
-  const parts = inputDate.split("-");
-  const year = parts[0];
-  const month = parts[1];
-  const day = parts[2];
+const notice = document.getElementById("billNotice");
+const status = document.getElementById("pageStatus");
+const retryButton = document.getElementById("retrySave");
+const editLink = document.getElementById("editPending");
+const historyLink = document.getElementById("backToHistory");
 
-  // Create a new date string in the desired format
-  const outputDate = `${day}-${month}-${year}`;
-
-  return outputDate;
+function showStatus(message) {
+  status.textContent = message;
+  notice.hidden = !message;
 }
 
-document.getElementById("millName").textContent =
-  localStorage.getItem("millName");
-document.getElementById("millAddress").textContent =
-  localStorage.getItem("millAddress");
-document.getElementById("millGSTIN").textContent =
-  localStorage.getItem("millGSTIN");
-document.getElementById("invoiceNo").textContent =
-  localStorage.getItem("invoiceNo");
-document.getElementById("placeOfSupply").textContent =
-  localStorage.getItem("placeOfSupply");
-document.getElementById("invoiceDate").textContent = convertDateFormat(
-  localStorage.getItem("invoiceDate")
-);
+function renderInvoice(invoice) {
+  const set = (id, value) => { document.getElementById(id).textContent = value ?? ""; };
+  const { customer, totals } = invoice;
+  const suffixIndex = invoice.invoiceNo.lastIndexOf("/");
+  set("invoiceNo", invoice.invoiceNo.slice(0, suffixIndex));
+  set("invoiceYear", invoice.invoiceNo.slice(suffixIndex));
+  set("invoiceDate", formatInvoiceDate(invoice.invoiceDate));
+  set("millName", customer.name);
+  set("millAddress", customer.address);
+  set("millGSTIN", customer.gstin);
+  set("placeOfSupply", customer.placeOfSupply);
 
-document.getElementById("sno1").textContent = localStorage.getItem("sno1");
-document.getElementById("par1").textContent = localStorage.getItem("par1");
-document.getElementById("hsn1").textContent = localStorage.getItem("hsn1");
-document.getElementById("qty1").textContent = localStorage.getItem("qty1");
-document.getElementById("rat1").textContent = localStorage.getItem("rat1");
-document.getElementById("amo1").textContent = localStorage.getItem("amo1");
+  for (let row = 1; row <= MAX_ITEMS; row++) {
+    const item = invoice.items[row];
+    set(`sno${row}`, item?.serial ?? (item ? row : ""));
+    set(`par${row}`, item?.description);
+    set(`hsn${row}`, item?.hsn);
+    set(`rat${row}`, item?.rate);
+    set(`qty${row}`, item?.quantity);
+    set(`amo${row}`, item?.amount);
+  }
 
-document.getElementById("sno2").textContent = localStorage.getItem("sno2");
-document.getElementById("par2").textContent = localStorage.getItem("par2");
-document.getElementById("hsn2").textContent = localStorage.getItem("hsn2");
-document.getElementById("qty2").textContent = localStorage.getItem("qty2");
-document.getElementById("rat2").textContent = localStorage.getItem("rat2");
-document.getElementById("amo2").textContent = localStorage.getItem("amo2");
-
-document.getElementById("sno3").textContent = localStorage.getItem("sno3");
-document.getElementById("par3").textContent = localStorage.getItem("par3");
-document.getElementById("hsn3").textContent = localStorage.getItem("hsn3");
-document.getElementById("qty3").textContent = localStorage.getItem("qty3");
-document.getElementById("rat3").textContent = localStorage.getItem("rat3");
-document.getElementById("amo3").textContent = localStorage.getItem("amo3");
-
-document.getElementById("sno4").textContent = localStorage.getItem("sno4");
-document.getElementById("par4").textContent = localStorage.getItem("par4");
-document.getElementById("hsn4").textContent = localStorage.getItem("hsn4");
-document.getElementById("qty4").textContent = localStorage.getItem("qty4");
-document.getElementById("rat4").textContent = localStorage.getItem("rat4");
-document.getElementById("amo4").textContent = localStorage.getItem("amo4");
-
-document.getElementById("sno5").textContent = localStorage.getItem("sno5");
-document.getElementById("par5").textContent = localStorage.getItem("par5");
-document.getElementById("hsn5").textContent = localStorage.getItem("hsn5");
-document.getElementById("qty5").textContent = localStorage.getItem("qty5");
-document.getElementById("rat5").textContent = localStorage.getItem("rat5");
-document.getElementById("amo5").textContent = localStorage.getItem("amo5");
-
-document.getElementById("sno6").textContent = localStorage.getItem("sno6");
-document.getElementById("par6").textContent = localStorage.getItem("par6");
-document.getElementById("hsn6").textContent = localStorage.getItem("hsn6");
-document.getElementById("qty6").textContent = localStorage.getItem("qty6");
-document.getElementById("rat6").textContent = localStorage.getItem("rat6");
-document.getElementById("amo6").textContent = localStorage.getItem("amo6");
-
-document.getElementById("sno7").textContent = localStorage.getItem("sno7");
-document.getElementById("par7").textContent = localStorage.getItem("par7");
-document.getElementById("hsn7").textContent = localStorage.getItem("hsn7");
-document.getElementById("qty7").textContent = localStorage.getItem("qty7");
-document.getElementById("rat7").textContent = localStorage.getItem("rat7");
-document.getElementById("amo7").textContent = localStorage.getItem("amo7");
-
-document.getElementById("sno8").textContent = localStorage.getItem("sno8");
-document.getElementById("par8").textContent = localStorage.getItem("par8");
-document.getElementById("hsn8").textContent = localStorage.getItem("hsn8");
-document.getElementById("qty8").textContent = localStorage.getItem("qty8");
-document.getElementById("rat8").textContent = localStorage.getItem("rat8");
-document.getElementById("amo8").textContent = localStorage.getItem("amo8");
-
-document.getElementById("sno9").textContent = localStorage.getItem("sno9");
-document.getElementById("par9").textContent = localStorage.getItem("par9");
-document.getElementById("hsn9").textContent = localStorage.getItem("hsn9");
-document.getElementById("qty9").textContent = localStorage.getItem("qty9");
-document.getElementById("rat9").textContent = localStorage.getItem("rat9");
-document.getElementById("amo9").textContent = localStorage.getItem("amo9");
-
-document.getElementById("sno10").textContent = localStorage.getItem("sno10");
-document.getElementById("par10").textContent = localStorage.getItem("par10");
-document.getElementById("hsn10").textContent = localStorage.getItem("hsn10");
-document.getElementById("qty10").textContent = localStorage.getItem("qty10");
-document.getElementById("rat10").textContent = localStorage.getItem("rat10");
-document.getElementById("amo10").textContent = localStorage.getItem("amo10");
-
-document.getElementById("total").textContent = localStorage.getItem("total");
-document.getElementById("igst").textContent = localStorage.getItem("igst");
-document.getElementById("cgst").textContent = localStorage.getItem("cgst");
-document.getElementById("sgst").textContent = localStorage.getItem("sgst");
-document.getElementById("totalAmount").textContent =
-  localStorage.getItem("totalAmount") + "/-";
-
-document.getElementById("amountInWords").textContent =
-  localStorage.getItem("amountInWords") + " " + "Rupees Only";
-
-function printPage() {
-    window.print();
+  set("total", totals.subtotal);
+  set("igst", totals.igst);
+  set("cgst", totals.cgst);
+  set("sgst", totals.sgst);
+  set("totalAmount", `${totals.grandTotal}/-`);
+  set("amountInWords", `${totals.amountInWords} Rupees Only`);
+  document.querySelector("[data-private]").hidden = false;
 }
 
-function toggleContent(buttonId, spanId) {
-    const buttonText = document.getElementById(buttonId);
-    const spanContent = document.getElementById(spanId);
+function toggleContent() {
+  const button = document.getElementById("toggler");
+  const text = button.textContent === "ORIGINAL FOR RECIPIENT"
+    ? "DUPLICATE FOR RECORDS"
+    : "ORIGINAL FOR RECIPIENT";
+  button.textContent = text;
+  document.getElementById("oORd").textContent = text;
+}
 
-    // Toggle content between "DUPLICATE FOR RECORDS" and "ORIGINAL FOR RECIPIENT"
-    if (buttonText.textContent === 'ORIGINAL FOR RECIPIENT') {
-      buttonText.textContent = 'DUPLICATE FOR RECORDS';
-      spanContent.textContent = 'DUPLICATE FOR RECORDS';
-    } else {
-      buttonText.textContent = 'ORIGINAL FOR RECIPIENT';
-      spanContent.textContent = 'ORIGINAL FOR RECIPIENT';
+function printToPDF() {
+  const element = document.querySelector(".main-grid");
+  const options = {
+    margin: 0,
+    filename: "SS Tex Invoice.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 3 },
+    jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
+  };
+  window.html2pdf(element, options);
+}
+
+function syncPending(firebase, invoice) {
+  async function sync() {
+    retryButton.hidden = true;
+    editLink.hidden = true;
+    showStatus("Saved on this device. Saving to Firebase…");
+    const waiting = setTimeout(() => {
+      showStatus("Saved on this device. Waiting for Firebase to confirm the save…");
+    }, 6000);
+    try {
+      await saveInvoice(firebase, invoice);
+      history.replaceState(null, "", invoiceLink(invoiceKey(invoice.invoiceNo)));
+      removePendingInvoice(firebase.user.uid, invoice.submissionId);
+      showStatus("Saved to Invoice History.");
+      setTimeout(() => showStatus(""), 3000);
+    } catch (error) {
+      if (error.code === "duplicate-invoice") {
+        showStatus(`${error.message} This copy is still on this device.`);
+        editLink.href = `calc.html?${new URLSearchParams({ pending: invoice.submissionId })}`;
+        editLink.hidden = false;
+      } else {
+        const message = databaseError(error, "Could not save to Firebase.");
+        showStatus(`${message} This invoice is still on this device.`);
+        retryButton.hidden = false;
+      }
+    } finally {
+      clearTimeout(waiting);
     }
   }
 
-  function printToPDF() {
-    var element = document.querySelector('.main-grid');
-
-    const options = {
-        margin: 0,
-        filename: 'SS Tex Invoice.pdf',
-        image: {type: 'jpeg', quality: 0.98},
-        html2canvas: {scale: 3},
-        jsPDF: {unit: 'cm', format: 'a4', orientation: 'portrait'}
-    };
-
-    html2pdf(element, options);
+  retryButton.addEventListener("click", sync);
+  return sync();
 }
+
+async function start() {
+  const firebase = await requireAccount();
+  if (!firebase) return;
+  const params = new URLSearchParams(location.search);
+  const pendingId = params.get("pending");
+  const id = params.get("id");
+  let invoice;
+  if (pendingId) {
+    invoice = readPendingInvoice(firebase.user.uid, pendingId);
+  } else if (id !== null) {
+    if (!/^[\w!%'()~*\-]+$/.test(id)) throw new Error("Invalid invoice link.");
+    const { get, ref } = firebase.databaseSdk;
+    try {
+      invoice = (await get(ref(firebase.database, `invoices/${id}`))).val();
+    } catch (error) {
+      throw new Error(databaseError(error, "Could not load the invoice. Check your connection and try again."));
+    }
+  } else {
+    invoice = readLegacyInvoice();
+  }
+
+  if (!invoice) throw new Error("This invoice could not be found.");
+  renderInvoice(invoice);
+  document.getElementById("toggler").addEventListener("click", toggleContent);
+  document.getElementById("printInvoice").addEventListener("click", () => window.print());
+  document.getElementById("downloadInvoice").addEventListener("click", printToPDF);
+  if (pendingId) await syncPending(firebase, invoice);
+  else showStatus("");
+}
+
+start().catch((error) => {
+  showStatus(error.message);
+  historyLink.hidden = false;
+});

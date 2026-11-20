@@ -1,499 +1,259 @@
+import { databaseError, requireAccount } from "./firebase.js";
+import {
+  calculateLineAmount, calculateTotals, fillCustomer, financialYearSuffix,
+  invoiceKey, MAX_ITEMS, readCustomer, validateCustomer,
+} from "./invoice-data.js";
+import {
+  invoiceLink, queueInvoice, readPendingInvoice, removePendingInvoice, saveInvoice,
+} from "./invoice-store.js";
+
 const form = document.getElementById("form");
+const pageStatus = document.getElementById("pageStatus");
+const formStatus = document.getElementById("formStatus");
+const customerPicker = document.getElementById("customerPicker");
+const invoiceDate = document.getElementById("invoiceDate");
+const invoiceNo = document.getElementById("invoiceNo");
+const gstin = form.elements.gstin;
+const interState = document.getElementById("myCheckbox");
+const rows = [];
 
-// const millName = document.getElementById('millName');
-// const millAddress = document.getElementById('millAddress');
-// const millGSTIN = document.getElementById('millGSTIN');
-// const invoiceNo = document.getElementById('invoiceNo');
-// const invoiceDate = document.getElementById('invoiceDate');
+function status(element, message) {
+  element.textContent = message;
+  element.hidden = !message;
+}
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+function refreshCustomer() {
+  const { placeOfSupply } = readCustomer(form);
+  document.getElementById("placeOfSupply").value = placeOfSupply;
+  interState.checked = Boolean(placeOfSupply && placeOfSupply !== "Tamil Nadu");
+  refreshTotals();
+}
 
-  const millName = document.getElementById("millName").value;
-  const millAddress = document.getElementById("millAddress").value;
-  const millGSTIN = document.getElementById("millGSTIN").value;
-  const invoiceNo = document.getElementById("invoiceNo").value;
-  const invoiceDate = document.getElementById("invoiceDate").value;
-  const placeOfSupply = document.getElementById("placeOfSupply").value;
+function createRows() {
+  const template = document.getElementById("lineTemplate");
+  const body = document.getElementById("lineItems");
+  for (let number = 1; number <= MAX_ITEMS; number++) {
+    const row = template.content.firstElementChild.cloneNode(true);
+    row.querySelector("[data-serial]").textContent = number;
+    const fields = {};
+    for (const field of row.querySelectorAll("[data-field]")) {
+      fields[field.dataset.field] = field;
+      field.setAttribute("aria-label", `${field.getAttribute("aria-label")}, line ${number}`);
+    }
+    rows.push(fields);
+    body.append(row);
+  }
+}
 
-  const sno1 = document.getElementById("sno1").value;
-  const par1 = document.getElementById("par1").value;
-  const hsn1 = document.getElementById("hsn1").value;
-  const qty1 = document.getElementById("qty1").value;
-  const rat1 = document.getElementById("rat1").value;
-  const amo1 = document.getElementById("amo1").value;
+function readItems(validate = false) {
+  const items = {};
+  rows.forEach((row, index) => {
+    const description = row.description.value.trim();
+    const hsn = row.hsn.value.trim();
+    const hasEntry = Boolean(row.description.value || row.rate.value || row.quantity.value);
+    if (validate && hasEntry) {
+      row.description.setCustomValidity(description ? "" : "Enter the service description.");
+      row.hsn.setCustomValidity(hsn ? "" : "Enter the HSN/SAC code.");
+      row.rate.setCustomValidity(row.rate.value ? "" : "Enter the rate.");
+      row.quantity.setCustomValidity(row.quantity.value ? "" : "Enter the quantity.");
+      row.gstPercent.setCustomValidity(row.gstPercent.value ? "" : "Enter a GST percentage.");
+    }
 
-  const sno2 = document.getElementById("sno2").value;
-  const par2 = document.getElementById("par2").value;
-  const hsn2 = document.getElementById("hsn2").value;
-  const qty2 = document.getElementById("qty2").value;
-  const rat2 = document.getElementById("rat2").value;
-  const amo2 = document.getElementById("amo2").value;
+    const amount = calculateLineAmount(Number(row.rate.value), Number(row.quantity.value));
+    row.amount.value = row.rate.value && row.quantity.value ? amount : "";
+    if (hasEntry) {
+      items[index + 1] = {
+        description, hsn, rate: Number(row.rate.value), quantity: Number(row.quantity.value),
+        gstPercent: Number(row.gstPercent.value), amount,
+      };
+    }
+  });
+  return items;
+}
 
-  const sno3 = document.getElementById("sno3").value;
-  const par3 = document.getElementById("par3").value;
-  const hsn3 = document.getElementById("hsn3").value;
-  const qty3 = document.getElementById("qty3").value;
-  const rat3 = document.getElementById("rat3").value;
-  const amo3 = document.getElementById("amo3").value;
+function refreshTotals() {
+  const totals = calculateTotals(readItems(), interState.checked);
+  for (const [field, value] of Object.entries({
+    total: totals.subtotal.toFixed(2),
+    igst: interState.checked ? totals.igst.toFixed(2) : "0",
+    cgst: interState.checked ? "0" : totals.cgst.toFixed(2),
+    sgst: interState.checked ? "0" : totals.sgst.toFixed(2),
+    totalAmount: totals.grandTotal,
+    amountInWords: totals.amountInWords,
+  })) {
+    document.getElementById(field).value = value;
+  }
+}
 
-  const sno4 = document.getElementById("sno4").value;
-  const par4 = document.getElementById("par4").value;
-  const hsn4 = document.getElementById("hsn4").value;
-  const qty4 = document.getElementById("qty4").value;
-  const rat4 = document.getElementById("rat4").value;
-  const amo4 = document.getElementById("amo4").value;
+function refreshFinancialYear() {
+  document.getElementById("yearSuffix").textContent =
+    invoiceDate.value ? `/${financialYearSuffix(invoiceDate.value)}` : "";
+}
 
-  const sno5 = document.getElementById("sno5").value;
-  const par5 = document.getElementById("par5").value;
-  const hsn5 = document.getElementById("hsn5").value;
-  const qty5 = document.getElementById("qty5").value;
-  const rat5 = document.getElementById("rat5").value;
-  const amo5 = document.getElementById("amo5").value;
+function restorePending(invoice) {
+  fillCustomer(form, invoice.customer);
+  invoiceNo.value = invoice.invoiceNo.replace(/\/\d{2}-\d{2}$/, "");
+  invoiceDate.value = invoice.invoiceDate;
+  refreshFinancialYear();
+  refreshCustomer();
+  interState.checked = invoice.interState;
+  for (const [index, item] of Object.entries(invoice.items)) {
+    const row = rows[Number(index) - 1];
+    for (const key of ["description", "hsn", "rate", "quantity", "gstPercent"]) {
+      row[key].value = item[key];
+    }
+  }
+  refreshTotals();
+}
 
-  const sno6 = document.getElementById("sno6").value;
-  const par6 = document.getElementById("par6").value;
-  const hsn6 = document.getElementById("hsn6").value;
-  const qty6 = document.getElementById("qty6").value;
-  const rat6 = document.getElementById("rat6").value;
-  const amo6 = document.getElementById("amo6").value;
+function populatePicker(picker, records, label, emptyLabel) {
+  const selected = picker.value;
+  const options = Object.entries(records).sort(([, first], [, second]) =>
+    label(first).localeCompare(label(second)));
+  picker.replaceChildren(
+    new Option(emptyLabel, ""),
+    ...options.map(([key, value]) => new Option(label(value), key)),
+  );
+  if (Object.hasOwn(records, selected)) picker.value = selected;
+  picker.disabled = options.length === 0;
+}
 
-  const sno7 = document.getElementById("sno7").value;
-  const par7 = document.getElementById("par7").value;
-  const hsn7 = document.getElementById("hsn7").value;
-  const qty7 = document.getElementById("qty7").value;
-  const rat7 = document.getElementById("rat7").value;
-  const amo7 = document.getElementById("amo7").value;
+function watchCatalog(firebase) {
+  const { database, databaseSdk } = firebase;
+  const catalogStatus = document.getElementById("catalogStatus");
+  const { onValue, ref } = databaseSdk;
+  let customers = {};
+  let services = {};
+  const handleError = (error) => status(catalogStatus,
+    databaseError(error, "Could not load saved customers or services. You can still enter details manually."));
 
-  const sno8 = document.getElementById("sno8").value;
-  const par8 = document.getElementById("par8").value;
-  const hsn8 = document.getElementById("hsn8").value;
-  const qty8 = document.getElementById("qty8").value;
-  const rat8 = document.getElementById("rat8").value;
-  const amo8 = document.getElementById("amo8").value;
+  onValue(ref(database, "customers"), (snapshot) => {
+    customers = snapshot.val() ?? {};
+    populatePicker(customerPicker, customers, (customer) => customer.name, "Enter details manually");
+  }, handleError);
+  customerPicker.addEventListener("change", () => {
+    const customer = customers[customerPicker.value];
+    if (!customer) return;
+    fillCustomer(form, customer);
+    form.elements.customerName.setCustomValidity("");
+    form.elements.customerAddress.setCustomValidity("");
+    gstin.setCustomValidity("");
+    refreshCustomer();
+  });
 
-  const sno9 = document.getElementById("sno9").value;
-  const par9 = document.getElementById("par9").value;
-  const hsn9 = document.getElementById("hsn9").value;
-  const qty9 = document.getElementById("qty9").value;
-  const rat9 = document.getElementById("rat9").value;
-  const amo9 = document.getElementById("amo9").value;
+  onValue(ref(database, "services"), (snapshot) => {
+    services = snapshot.val() ?? {};
+    for (const { service } of rows) {
+      populatePicker(service, services, (item) => item.description, "Enter service manually");
+    }
+  }, handleError);
+  for (const row of rows) {
+    row.service.addEventListener("change", () => {
+      const item = services[row.service.value];
+      if (!item) return;
+      for (const key of ["description", "hsn", "rate", "gstPercent"]) {
+        row[key].value = item[key];
+        row[key].setCustomValidity("");
+      }
+      if (!row.quantity.value) row.quantity.value = 1;
+      row.quantity.setCustomValidity("");
+      refreshTotals();
+    });
+  }
+}
 
-  const sno10 = document.getElementById("sno10").value;
-  const par10 = document.getElementById("par10").value;
-  const hsn10 = document.getElementById("hsn10").value;
-  const qty10 = document.getElementById("qty10").value;
-  const rat10 = document.getElementById("rat10").value;
-  const amo10 = document.getElementById("amo10").value;
-
-  localStorage.setItem("millName", millName);
-  localStorage.setItem("millAddress", millAddress);
-  localStorage.setItem("millGSTIN", millGSTIN);
-  localStorage.setItem("invoiceNo", invoiceNo);
-  localStorage.setItem("invoiceDate", invoiceDate);
-  localStorage.setItem("placeOfSupply", placeOfSupply);
-
-  localStorage.setItem("sno1", sno1);
-  localStorage.setItem("par1", par1);
-  localStorage.setItem("hsn1", hsn1);
-  localStorage.setItem("qty1", qty1);
-  localStorage.setItem("rat1", rat1);
-  localStorage.setItem("amo1", amo1);
-
-  localStorage.setItem("sno2", sno2);
-  localStorage.setItem("par2", par2);
-  localStorage.setItem("hsn2", hsn2);
-  localStorage.setItem("qty2", qty2);
-  localStorage.setItem("rat2", rat2);
-  localStorage.setItem("amo2", amo2);
-
-  localStorage.setItem("sno3", sno3);
-  localStorage.setItem("par3", par3);
-  localStorage.setItem("hsn3", hsn3);
-  localStorage.setItem("qty3", qty3);
-  localStorage.setItem("rat3", rat3);
-  localStorage.setItem("amo3", amo3);
-
-  localStorage.setItem("sno4", sno4);
-  localStorage.setItem("par4", par4);
-  localStorage.setItem("hsn4", hsn4);
-  localStorage.setItem("qty4", qty4);
-  localStorage.setItem("rat4", rat4);
-  localStorage.setItem("amo4", amo4);
-
-  localStorage.setItem("sno5", sno5);
-  localStorage.setItem("par5", par5);
-  localStorage.setItem("hsn5", hsn5);
-  localStorage.setItem("qty5", qty5);
-  localStorage.setItem("rat5", rat5);
-  localStorage.setItem("amo5", amo5);
-
-  localStorage.setItem("sno6", sno6);
-  localStorage.setItem("par6", par6);
-  localStorage.setItem("hsn6", hsn6);
-  localStorage.setItem("qty6", qty6);
-  localStorage.setItem("rat6", rat6);
-  localStorage.setItem("amo6", amo6);
-
-  localStorage.setItem("sno7", sno7);
-  localStorage.setItem("par7", par7);
-  localStorage.setItem("hsn7", hsn7);
-  localStorage.setItem("qty7", qty7);
-  localStorage.setItem("rat7", rat7);
-  localStorage.setItem("amo7", amo7);
-
-  localStorage.setItem("sno8", sno8);
-  localStorage.setItem("par8", par8);
-  localStorage.setItem("hsn8", hsn8);
-  localStorage.setItem("qty8", qty8);
-  localStorage.setItem("rat8", rat8);
-  localStorage.setItem("amo8", amo8);
-
-  localStorage.setItem("sno9", sno9);
-  localStorage.setItem("par9", par9);
-  localStorage.setItem("hsn9", hsn9);
-  localStorage.setItem("qty9", qty9);
-  localStorage.setItem("rat9", rat9);
-  localStorage.setItem("amo9", amo9);
-
-  localStorage.setItem("sno10", sno10);
-  localStorage.setItem("par10", par10);
-  localStorage.setItem("hsn10", hsn10);
-  localStorage.setItem("qty10", qty10);
-  localStorage.setItem("rat10", rat10);
-  localStorage.setItem("amo10", amo10);
-
-  window.location.href = "bill.html";
-});
-
-function numberToWords(number) {
-  const units = [
-    "",
-    "One",
-    "Two",
-    "Three",
-    "Four",
-    "Five",
-    "Six",
-    "Seven",
-    "Eight",
-    "Nine",
-    "Ten",
-  ];
-  const teens = [
-    "Eleven",
-    "Twelve",
-    "Thirteen",
-    "Fourteen",
-    "Fifteen",
-    "Sixteen",
-    "Seventeen",
-    "Eighteen",
-    "Nineteen",
-  ];
-  const tens = [
-    "",
-    "",
-    "Twenty",
-    "Thirty",
-    "Forty",
-    "Fifty",
-    "Sixty",
-    "Seventy",
-    "Eighty",
-    "Ninety",
-  ];
-
-  function convertLessThanOneThousand(n) {
-    if (n === 0) {
-      return "";
-    } else if (n <= 10) {
-      return units[n];
-    } else if (n < 20) {
-      return teens[n - 11];
-    } else if (n < 100) {
-      return tens[Math.floor(n / 10)] + " " + units[n % 10];
+async function start() {
+  const firebase = await requireAccount();
+  if (!firebase) return;
+  const { user } = firebase;
+  createRows();
+  const pendingId = new URLSearchParams(location.search).get("pending");
+  if (pendingId) {
+    try {
+      const pending = readPendingInvoice(user.uid, pendingId);
+      if (pending) restorePending(pending);
+      else status(formStatus, "This device no longer has that pending invoice.");
+    } catch {
+      status(formStatus, "This device could not reopen the pending invoice.");
+    }
+  }
+  watchCatalog(firebase);
+  document.querySelector("[data-private]").hidden = false;
+  status(pageStatus, "");
+  form.addEventListener("input", (event) => {
+    const field = event.target;
+    field.setCustomValidity?.("");
+    if (field === gstin) {
+      gstin.value = gstin.value.toUpperCase();
+      refreshCustomer();
+    } else if (field === invoiceDate) {
+      refreshFinancialYear();
     } else {
-      return (
-        units[Math.floor(n / 100)] +
-        " Hundred " +
-        convertLessThanOneThousand(n % 100)
-      );
+      if (["customerName", "customerAddress"].includes(field.name) || field.dataset.field === "description") {
+        field.value = field.value.replace(/\b\w/g, (letter) => letter.toUpperCase());
+      }
+      refreshTotals();
     }
-  }
+  });
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      for (const field of form.elements) field.setCustomValidity?.("");
+      refreshFinancialYear();
+      refreshCustomer();
+      status(formStatus, "");
+    }, 0);
+  });
 
-  function convert(number) {
-    if (number === 0) {
-      return "Zero";
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status(formStatus, "");
+    const customer = readCustomer(form);
+    const number = invoiceNo.value.trim();
+    invoiceNo.setCustomValidity(number ? "" : "Enter the invoice number.");
+    const items = readItems(true);
+    if (!validateCustomer(form, customer)) return;
+    if (!Object.keys(items).length) {
+      status(formStatus, "Add at least one service before submitting.");
+      rows[0].description.focus();
+      return;
+    }
+    const totals = calculateTotals(items, interState.checked);
+    if (!totals.amountInWords) {
+      status(formStatus, "The total is too large. Check the rates and quantities.");
+      return;
     }
 
-    let result = "";
-    let billion = Math.floor(number / 1000000000);
-    let million = Math.floor((number % 1000000000) / 1000000);
-    let thousand = Math.floor((number % 1000000) / 1000);
-    let remainder = number % 1000;
-
-    if (billion) {
-      result += convertLessThanOneThousand(billion) + " Billion ";
+    const invoice = {
+      schemaVersion: 1,
+      submissionId: crypto.randomUUID(),
+      invoiceNo: `${number}/${financialYearSuffix(invoiceDate.value)}`,
+      invoiceDate: invoiceDate.value,
+      customer,
+      items,
+      interState: interState.checked,
+      totals,
+      queuedAt: Date.now(),
+    };
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      queueInvoice(user.uid, invoice);
+    } catch {
+      status(formStatus, "Local storage is unavailable. Keep this page open while Firebase saves the invoice…");
+      try {
+        await saveInvoice(firebase, invoice);
+        location.assign(invoiceLink(invoiceKey(invoice.invoiceNo)));
+      } catch (error) {
+        status(formStatus, error.code === "duplicate-invoice" ? error.message
+          : databaseError(error, "Could not save the invoice. Your details are still in the form."));
+        button.disabled = false;
+      }
+      return;
     }
 
-    if (million) {
-      result += convertLessThanOneThousand(million) + " Million ";
-    }
-
-    if (thousand) {
-      result += convertLessThanOneThousand(thousand) + " Thousand ";
-    }
-
-    if (remainder) {
-      result += convertLessThanOneThousand(remainder);
-    }
-
-    return result.trim();
-  }
-
-  return convert(number);
+    if (pendingId) removePendingInvoice(user.uid, pendingId);
+    location.assign(invoiceLink(invoice.submissionId, true));
+  });
 }
 
-function calculate(event) {
-  let targetId = event.target.id;
-  let index = targetId.slice(3);
-
-  let qtyId = `qty${index}`;
-  let ratId = `rat${index}`;
-  let amoId = `amo${index}`;
-
-  let qtyInput = document.getElementById(qtyId);
-  let ratInput = document.getElementById(ratId);
-  let amoInput = document.getElementById(amoId);
-
-  // Extract the numeric part from the input values
-  let qtyValue = parseFloat(qtyInput.value) || 0; // Convert to float, default to 0 if not a valid number
-  let ratValue = parseFloat(ratInput.value) || 0;
-
-  let amount = qtyValue * ratValue;
-
-  // Update the amount field
-  amoInput.value = amount;
-  calculateTA();
-}
-
-function calculateTA() {
-  let total = 0;
-
-  for (let i = 1; i <= 10; i++) {
-    let amoId = `amo${i}`;
-    let amoElement = document.getElementById(amoId);
-
-    if (amoElement) {
-      // Check if the element exists
-      total += parseFloat(amoElement.value) || 0; // Convert to float, default to 0 if not a valid number
-    }
-  }
-
-  const checkBox = document.getElementById("myCheckbox");
-
-  document.getElementById("total").value = total.toFixed(2);
-  if (checkBox.checked) {
-    document.getElementById("igst").value = ((total * 18) / 100).toFixed(2);
-    document.getElementById("cgst").value = 0;
-    document.getElementById("sgst").value = 0;
-  } else {
-    document.getElementById("igst").value = 0;
-    document.getElementById("cgst").value = ((total * 9) / 100).toFixed(2);
-    document.getElementById("sgst").value = ((total * 9) / 100).toFixed(2);
-  }
-
-  const igst = Number(document.getElementById("igst").value);
-  const cgst = Number(document.getElementById("cgst").value);
-  const sgst = Number(document.getElementById("sgst").value);
-  const totalAmount = Math.round((total + igst + cgst + sgst).toFixed(2));
-  document.getElementById("totalAmount").value = totalAmount;
-
-  localStorage.setItem("total", total);
-  localStorage.setItem("igst", igst);
-  localStorage.setItem("cgst", cgst);
-  localStorage.setItem("sgst", sgst);
-  localStorage.setItem("totalAmount", totalAmount);
-
-  const amountInWords = numberToWords(totalAmount);
-  localStorage.setItem("amountInWords", amountInWords);
-  document.getElementById("amountInWords").value = amountInWords;
-}
-
-
-function updateSNoHSN(event){
-  let targetId = event.target.id;
-  let index = targetId.slice(3);
-
-  let snoId = `sno${index}`;
-  let hsnId = `hsn${index}`;
-
-  let snoInput = document.getElementById(snoId);
-  let hsnInput = document.getElementById(hsnId);
-
-  snoInput.value = index;
-  hsnInput.value = 9987;
-}
-
-function capitalizeFirstLetter(event) {
-    var inputValue = event.target.value;
-
-      // Capitalize the first letter of each word and update the input value
-      var capitalizedValue = inputValue.replace(/\b\w/g, function(match) {
-        return match.toUpperCase();
-      });
-
-      event.target.value = capitalizedValue;
-  }
-
-  function capitalizeAllLetters(event) {
-    // Access the current value of the input element
-    var inputValue = event.target.value;
-
-    // Capitalize all letters and update the input value
-    var capitalizedValue = inputValue.toUpperCase();
-
-    event.target.value = capitalizedValue;
-  }
-
-  function validateGST() {
-    var gstInput = document.getElementById('millGSTIN').value.toUpperCase();
-    var gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
-
-    if (gstRegex.test(gstInput)) {
-      stateCode = gstInput.substring(0, 2);
-      var checkBox = document.getElementById('myCheckbox');
-
-      // Map state codes to place of supply information
-    switch (stateCode) {
-      case '01':
-        placeOfSupply = 'Jammu and Kashmir';
-        break;
-      case '02':
-        placeOfSupply = 'Himachal Pradesh';
-        break;
-      case '03':
-        placeOfSupply = 'Punjab';
-        break;
-      case '04':
-        placeOfSupply = 'Chandigarh';
-        break;
-      case '05':
-        placeOfSupply = 'Uttarakhand';
-        break;
-      case '06':
-        placeOfSupply = 'Haryana';
-        break;
-      case '07':
-        placeOfSupply = 'Delhi';
-        break;
-      case '08':
-        placeOfSupply = 'Rajasthan';
-        break;
-      case '09':
-        placeOfSupply = 'Uttar Pradesh';
-        break;
-      case '10':
-        placeOfSupply = 'Bihar';
-        break;
-      case '11':
-        placeOfSupply = 'Sikkim';
-        break;
-      case '12':
-        placeOfSupply = 'Arunachal Pradesh';
-        break;
-      case '13':
-        placeOfSupply = 'Nagaland';
-        break;
-      case '14':
-        placeOfSupply = 'Manipur';
-        break;
-      case '15':
-        placeOfSupply = 'Mizoram';
-        break;
-      case '16':
-        placeOfSupply = 'Tripura';
-        break;
-      case '17':
-        placeOfSupply = 'Meghalaya';
-        break;
-      case '18':
-        placeOfSupply = 'Assam';
-        break;
-      case '19':
-        placeOfSupply = 'West Bengal';
-        break;
-      case '20':
-        placeOfSupply = 'Jharkhand';
-        break;
-      case '21':
-        placeOfSupply = 'Orissa';
-        break;
-      case '22':
-        placeOfSupply = 'Chhattisgarh';
-        break;
-      case '23':
-        placeOfSupply = 'Madhya Pradesh';
-        break;
-      case '24':
-        placeOfSupply = 'Gujarat';
-        break;
-      case '25':
-        placeOfSupply = 'Daman and Diu';
-        break;
-      case '26':
-        placeOfSupply = 'Dadra and Nagar Haveli';
-        break;
-      case '27':
-        placeOfSupply = 'Maharashtra';
-        break;
-      case '28':
-        placeOfSupply = 'Andhra Pradesh';
-        break;
-      case '29':
-        placeOfSupply = 'Karnataka';
-        break;
-      case '30':
-        placeOfSupply = 'Goa';
-        break;
-      case '31':
-        placeOfSupply = 'Lakshadweep';
-        break;
-      case '32':
-        placeOfSupply = 'Kerala';
-        break;
-      case '33':
-        placeOfSupply = 'Tamil Nadu';
-        break;
-      case '34':
-        placeOfSupply = 'Puducherry';
-        break;
-      case '35':
-        placeOfSupply = 'Andaman and Nicobar Islands';
-        break;
-      case '36':
-        placeOfSupply = 'Telangana';
-        break;
-      case '37':
-        placeOfSupply = 'Andhra Pradesh (New)';
-        break;
-      case '97':
-        placeOfSupply = 'Other Territories';
-        break;
-      default:
-        placeOfSupply = 'Place of Supply information not available for this state code.';
-    }
-
-    document.getElementById('placeOfSupply').value = placeOfSupply;
-    if (placeOfSupply === 'Tamil Nadu') {
-      checkBox.checked = false;
-    } else {
-      checkBox.checked = true;
-    }
-    } else {
-      window.alert('Invalid GST Number. Please check the format.');
-      document.getElementById('placeOfSupply').value = "";
-      document.getElementById('millGSTIN').value = "";
-    }
-  }
+start().catch((error) => status(pageStatus, error.message));

@@ -422,3 +422,265 @@ textarea:focus {
   height: 50px;
   border-radius: 5px;
 }
+
+/* Invoice entry, history and catalog */
+[hidden] {
+  display: none !important;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: .6;
+}
+
+.entry-content {
+  box-sizing: border-box;
+  width: min(1100px, 100%);
+  margin-block: 1rem;
+  padding: clamp(.75rem, 3vw, 1.5rem);
+  background-color: white;
+  border-radius: 6px;
+}
+
+.app-nav,
+.bill-navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.app-nav {
+  padding-bottom: .75rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.app-nav button,
+.catalog-grid button {
+  margin: 0;
+}
+
+.app-status {
+  padding: .65rem .8rem;
+  background-color: #f3f6f8;
+  color: #20242a;
+  border-radius: 4px;
+}
+
+#loginStatus {
+  text-align: center;
+  margin: .5rem 0 0;
+}
+
+#loginStatus:empty {
+  display: none;
+}
+
+.customer-fields {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 340px);
+  align-items: start;
+  gap: .45rem .7rem;
+  margin-bottom: 1rem;
+}
+
+.entry-content input:not([type="checkbox"]),
+.entry-content textarea,
+.entry-content select {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.1rem;
+  padding: .3rem;
+  font: inherit;
+}
+
+.entry-content #millAddress {
+  height: auto;
+}
+
+.entry-content :is(#millName, #millAddress, #amountInWords) {
+  width: 100%;
+}
+
+.number-field {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.number-field span {
+  white-space: nowrap;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.entry-items,
+.history-table {
+  border-collapse: collapse;
+  text-align: left;
+  width: 100%;
+}
+
+.entry-items {
+  min-width: 800px;
+}
+
+.entry-items > :is(thead, tbody) > tr > *,
+.history-table > :is(thead, tbody) > tr > * {
+  border-bottom: 1px solid #ddd;
+  padding: .35rem;
+}
+
+.entry-items td:first-of-type {
+  min-width: 245px;
+}
+
+.entry-items td:not(:first-of-type) {
+  width: 10%;
+  min-width: 75px;
+}
+
+.entry-items textarea {
+  margin-top: .2rem;
+}
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-block: 1rem .5rem;
+}
+
+.totals label {
+  width: 8rem;
+}
+
+.tax-switch {
+  display: block;
+  margin-bottom: .75rem;
+}
+
+.amount-in-words {
+  display: block;
+  max-width: 38rem;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  gap: 1.5rem;
+}
+
+.catalog-grid label {
+  display: block;
+  margin-block: .4rem .7rem;
+}
+
+.entry-list {
+  list-style: none;
+  padding: 0;
+}
+
+.entry-list li {
+  border-top: 1px solid #ddd;
+  padding-block: .6rem;
+  overflow-wrap: anywhere;
+}
+
+.catalog-grid li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.bill-navigation {
+  justify-content: center;
+  margin-block: 1rem;
+}
+
+.bill-notice {
+  position: fixed;
+  z-index: 2;
+  inset: auto 1rem 1rem;
+  width: fit-content;
+  max-width: calc(100vw - 2rem);
+  margin-inline: auto;
+  padding: .65rem 1rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.bill-notice p {
+  margin: 0;
+}
+
+.bill-notice a {
+  display: inline-block;
+  margin-top: .4rem;
+}
+
+@media print {
+  .bill-notice,
+  .bill-navigation {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .customer-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .entry-items {
+    display: block;
+    min-width: 0;
+  }
+
+  .entry-items thead {
+    display: none;
+  }
+
+  .entry-items tbody {
+    display: block;
+  }
+
+  .entry-items tbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid #ddd;
+    padding-block: .5rem;
+  }
+
+  .entry-items > tbody > tr > * {
+    border: 0;
+  }
+
+  .entry-items tbody td:first-of-type,
+  .entry-items tbody td:not(:first-of-type) {
+    width: auto;
+    min-width: 0;
+  }
+
+  .entry-items tbody th,
+  .entry-items td:first-of-type {
+    grid-column: 1 / -1;
+  }
+
+  .entry-items tbody th::before {
+    content: "Line ";
+  }
+
+  .entry-items td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: .2rem;
+  }
+}

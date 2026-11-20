@@ -15,38 +15,12 @@
         <img src="media/SST Logo.png" class="login-logo" alt="Logo">
         <h1>SS TEX Invoice</h1>
         <form action="" class="login-form">
-            <input type="email" id="email" class="login-input login-email" placeholder=" Email">
-            <input type="password" id="password" class="login-input login-password" placeholder=" Password">
-            <button type="submit" class="login-submit">Login</button>
+            <input type="email" id="email" class="login-input login-email" placeholder=" Email" aria-label="Email" autocomplete="username" required>
+            <input type="password" id="password" class="login-input login-password" placeholder=" Password" aria-label="Password" autocomplete="current-password" required>
+            <button type="submit" class="login-submit" disabled>Login</button>
+            <p id="loginStatus" role="status">Connecting to Firebase…</p>
         </form>
     </div>
-    <script>
-const form = document.querySelector(".login-form");
-
-form.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-    const emailValue = document.getElementById("email").value;
-    const passwordValue = document.getElementById("password").value;
-    const loadingOverlay = document.querySelector(".loading-overlay");
-    const loadingOverlayImageContainer = document.querySelector(".loading-overlay-image-container");
-
-    if ((emailValue === "sstextamil@gmail.com" && passwordValue === "sstex@123") ||
-        (emailValue === "sstexraja@gmail.com" && passwordValue === "sstex@123")) {
-            loadingOverlay.style.display = "block";
-            loadingOverlayImageContainer.style.display = "block";
-
-            setTimeout(() => {
-                loadingOverlay.style.display = "none";
-                loadingOverlayImageContainer.style.display = "none";
-                window.location.href = "calc.html"}, 1000);
-    } else {
-        alert("Email / Password is incorrect...!");
-        password.value = "";
-    }
-});
-    </script>
+    <script type="module" src="login.js"></script>
 </body>
 </html>

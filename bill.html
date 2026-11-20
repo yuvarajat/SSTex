@@ -13,6 +13,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body class="bill-margin-padding">
+    <div class="bill-notice" id="billNotice">
+      <p id="pageStatus" role="status">Loading invoice…</p>
+      <button id="retrySave" type="button" hidden>Retry save</button>
+      <a id="editPending" hidden>Correct invoice number</a>
+      <a id="backToHistory" href="history.html" hidden>Invoice History</a>
+    </div>
+    <div data-private hidden>
     <page size="A4">
       <div class="main-grid">
         <div class="header">
@@ -62,7 +69,7 @@
             </div>
           </div>
           <div class="item item4">
-            <b>Invoice No:</b> <span id="invoiceNo"></span><span>/26-27</span>
+            <b>Invoice No:</b> <span id="invoiceNo"></span><span id="invoiceYear">/26-27</span>
             <br />
             <b>Invoice Date:</b> <span id="invoiceDate"></span>
           </div>
@@ -185,10 +192,15 @@
     </page>
     <br><br><br>
     <div class="print-button">
-      <button type="button" id="toggler" onclick="toggleContent('toggler', 'oORd')">ORIGINAL FOR RECIPIENT</button>
-      <button id="printButton" type="button" onclick="printToPDF()">Download</button>
-      <button id="printButton" type="button" onclick="printPage()">Print</button>
+      <button type="button" id="toggler">ORIGINAL FOR RECIPIENT</button>
+      <button id="downloadInvoice" type="button">Download</button>
+      <button id="printInvoice" type="button">Print</button>
     </div>
-    <script src="bill-script.js"></script>
+    <div class="bill-navigation">
+      <a href="calc.html">New Invoice</a>
+      <a href="history.html">Invoice History</a>
+    </div>
+    </div>
+    <script type="module" src="bill-script.js"></script>
   </body>
 </html>
