@@ -1,0 +1,22 @@
+.app-footer {
+  padding-inline: var(--gutter, clamp(1rem, 3vw, 2.25rem));
+  color: var(--muted, #536276);
+  font: .8rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.app-footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .4rem 1rem;
+  max-width: var(--page-width, 74rem);
+  margin-inline: auto;
+  padding-block: 1rem 1.5rem;
+  border-top: 1px solid var(--line, #dce3ec);
+}
+
+.app-footer a { color: var(--blue-dark, #194774); }
+
+@media print {
+  .app-footer { display: none; }
+}

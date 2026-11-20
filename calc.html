@@ -95,16 +95,23 @@
 
           <p id="formStatus" class="app-status" role="status" hidden></p>
           <div class="form-actions">
-            <button type="reset" class="button button-secondary">Reset form</button>
+            <button id="resetInvoice" type="button" class="button button-secondary">Reset form</button>
             <button type="submit" class="button button-primary">Generate invoice</button>
           </div>
         </form>
+        <dialog id="resetInvoiceDialog" class="panel confirmation-dialog" aria-labelledby="resetInvoiceTitle" aria-describedby="resetInvoiceDescription">
+          <form method="dialog" class="field-stack">
+            <h2 id="resetInvoiceTitle">Reset this invoice?</h2>
+            <p id="resetInvoiceDescription" class="dialog-description">This will clear the details entered in the form.</p>
+            <div class="form-actions">
+              <button type="submit" value="cancel" class="button button-secondary" autofocus>Cancel</button>
+              <button type="submit" value="reset" class="button button-danger">Reset form</button>
+            </div>
+          </form>
+        </dialog>
       </main>
-      <footer class="workspace-footer">
-        <span>© 2026 SS Tex. All rights reserved.</span>
-        <span>Developed by <a href="https://www.linkedin.com/in/yuvarajat/">Yuvaraja Tamilvanan</a></span>
-      </footer>
     </div>
+    <footer class="app-footer"></footer>
 
     <template id="lineTemplate">
       <tr>
@@ -120,6 +127,7 @@
         <td data-label="Amount (₹)"><input data-field="amount" aria-label="Amount" readonly /></td>
       </tr>
     </template>
+    <script type="module" src="app-footer.js"></script>
     <script type="module" src="app-tabs.js"></script>
     <script type="module" src="index-script.js"></script>
   </body>

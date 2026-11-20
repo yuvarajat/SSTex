@@ -17,6 +17,8 @@ const gstin = form.elements.gstin;
 const interState = document.getElementById("myCheckbox");
 const lineItems = document.getElementById("lineItems");
 const addLine = document.getElementById("addLine");
+const resetButton = document.getElementById("resetInvoice");
+const resetDialog = document.getElementById("resetInvoiceDialog");
 const rows = [];
 let visibleLines = 1;
 
@@ -198,6 +200,13 @@ async function start() {
   addLine.addEventListener("click", () => {
     showLines(visibleLines + 1);
     rows[visibleLines - 1].description.focus();
+  });
+  resetButton.addEventListener("click", () => {
+    resetDialog.returnValue = "";
+    resetDialog.showModal();
+  });
+  resetDialog.addEventListener("close", () => {
+    if (resetDialog.returnValue === "reset") form.reset();
   });
   form.addEventListener("input", (event) => {
     const field = event.target;

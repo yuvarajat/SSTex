@@ -105,7 +105,7 @@
     "customers": {
       ".read": "auth != null && root.child('members').child(auth.uid).val() == true",
       "$customer": {
-        ".write": "auth != null && root.child('members').child(auth.uid).val() == true && newData.exists()",
+        ".write": "auth != null && root.child('members').child(auth.uid).val() == true",
         ".validate": "newData.hasChildren(['name', 'address', 'gstin', 'placeOfSupply'])",
         "name": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 160"
@@ -127,7 +127,7 @@
     "services": {
       ".read": "auth != null && root.child('members').child(auth.uid).val() == true",
       "$service": {
-        ".write": "auth != null && root.child('members').child(auth.uid).val() == true && newData.exists()",
+        ".write": "auth != null && root.child('members').child(auth.uid).val() == true",
         ".validate": "newData.hasChildren(['description', 'hsn', 'rate', 'gstPercent'])",
         "description": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
