@@ -569,6 +569,61 @@
 .login-content h1 { margin-block: 1.45rem 1.2rem; }
 .login-form .button { margin-top: .2rem; }
 
+.password-control { position: relative; }
+
+.workspace .password-control input { padding-inline-end: 3rem; }
+.password-control input::-ms-reveal { display: none; }
+
+.password-toggle {
+  position: absolute;
+  inset-block: 1px;
+  inset-inline-end: 1px;
+  display: grid;
+  place-items: center;
+  width: 2.65rem;
+  padding: 0;
+  border: 0;
+  border-radius: .4rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.password-toggle:not(:disabled):hover {
+  background: #edf3f9;
+  color: var(--blue-dark);
+}
+
+.password-toggle:disabled { opacity: .6; cursor: default; }
+
+.password-eye {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: .9rem;
+  height: .9rem;
+  border: 1.5px solid currentColor;
+  border-radius: 74% 10%;
+  transform: rotate(45deg);
+}
+
+.password-eye::before {
+  content: "";
+  width: .29rem;
+  height: .29rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.password-control input[type="text"] + .password-toggle .password-eye::after {
+  content: "";
+  position: absolute;
+  width: 1.15rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
 @media (max-width: 52rem) {
   .nav-layout {
     grid-template-columns: 1fr auto;

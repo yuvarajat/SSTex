@@ -268,7 +268,7 @@ async function start() {
     try {
       queueInvoice(user.uid, invoice);
     } catch {
-      status(formStatus, "Local storage is unavailable. Keep this page open while Firebase saves the invoice…", true);
+      status(formStatus, "Your browser could not save a copy. Keep this page open while the invoice saves…", true);
       try {
         await saveInvoice(firebase, invoice);
         location.assign(invoiceLink(invoiceKey(invoice.invoiceNo)));

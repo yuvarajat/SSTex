@@ -20,11 +20,17 @@
           <label class="field">Email
             <input type="email" id="email" autocomplete="username" required />
           </label>
-          <label class="field">Password
-            <input type="password" id="password" autocomplete="current-password" required />
-          </label>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-control">
+              <input type="password" id="password" autocomplete="current-password" required />
+              <button id="passwordVisibility" class="password-toggle" type="button" aria-controls="password" aria-label="Show password" title="Show password" hidden>
+                <span class="password-eye" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
           <button type="submit" class="button button-primary" disabled>Sign in</button>
-          <p id="loginStatus" class="app-status is-loading" role="status">Connecting to Firebase…</p>
+          <p id="loginStatus" class="app-status is-loading" role="status">Loading sign-in…</p>
         </form>
       </div>
     </main>

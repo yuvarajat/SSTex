@@ -72,9 +72,9 @@ function syncPending(firebase, invoice) {
   async function sync() {
     retryButton.hidden = true;
     editLink.hidden = true;
-    showStatus("Saved on this device. Saving to Firebase…", true);
+    showStatus("Saved on this device. Syncing the invoice…", true);
     const waiting = setTimeout(() => {
-      showStatus("Saved on this device. Waiting for Firebase to confirm the save…", true);
+      showStatus("Saved on this device. Waiting to sync…", true);
     }, 6000);
     try {
       await saveInvoice(firebase, invoice);
@@ -88,7 +88,7 @@ function syncPending(firebase, invoice) {
         editLink.href = `calc.html?${new URLSearchParams({ pending: invoice.submissionId })}`;
         editLink.hidden = false;
       } else {
-        const message = databaseError(error, "Could not save to Firebase.");
+        const message = databaseError(error, "Could not sync the invoice.");
         showStatus(`${message} This invoice is still on this device.`);
         retryButton.hidden = false;
       }

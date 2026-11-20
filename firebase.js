@@ -9,7 +9,7 @@ export function connectFirebase() {
 
 async function initializeFirebase() {
   if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.databaseURL) {
-    throw new Error("Firebase setup is incomplete. Add the web app configuration first.");
+    throw new Error("The app is unavailable. Please contact the administrator.");
   }
 
   try {
@@ -26,7 +26,7 @@ async function initializeFirebase() {
       databaseSdk,
     };
   } catch {
-    throw new Error("Could not connect to Firebase. Check the connection and Firebase setup.");
+    throw new Error("Could not connect. Check your internet connection and try again.");
   }
 }
 
@@ -63,7 +63,7 @@ export async function requireAccount() {
 
 export function databaseError(error, fallback) {
   if (error.code?.toLowerCase().includes("permission")) {
-    return "This account could not access the database. Check the account's Firebase permissions.";
+    return "Your account does not have permission to perform this action.";
   }
   return fallback;
 }

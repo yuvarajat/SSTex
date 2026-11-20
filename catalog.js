@@ -130,7 +130,7 @@ function setupCatalog({ database, databaseSdk }, { path, form, label, read, fill
     const fields = [...form.elements];
     fields.forEach((field) => { field.disabled = true; });
     list.inert = true;
-    showStatus(formStatus, `Saving ${label} to Firebase…`, true);
+    showStatus(formStatus, `Saving ${label}…`, true);
     try {
       if (editingId) {
         const destination = ref(database, `${path}/${editingId}`);
