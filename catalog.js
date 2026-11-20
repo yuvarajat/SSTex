@@ -97,9 +97,9 @@ async function start() {
   const firebase = await requireAccount();
   if (!firebase) return;
 
-  setupCatalog(firebase, {
+  const form = document.querySelector(".catalog-grid form");
+  const catalog = form.id === "customerForm" ? {
     path: "customers",
-    form: document.getElementById("customerForm"),
     label: "customer",
     read: (form) => {
       const customer = readCustomer(form);
@@ -108,11 +108,8 @@ async function start() {
     fill: fillCustomer,
     title: (customer) => customer.name,
     summary: (customer) => `${customer.gstin} · ${customer.placeOfSupply}`,
-  });
-
-  setupCatalog(firebase, {
+  } : {
     path: "services",
-    form: document.getElementById("serviceForm"),
     label: "service",
     read: (form) => {
       const { description, hsn, rate, gstPercent } = form.elements;
@@ -130,7 +127,8 @@ async function start() {
     },
     title: (service) => service.description,
     summary: (service) => `${rupees.format(service.rate)} · HSN/SAC ${service.hsn} · GST ${service.gstPercent}%`,
-  });
+  };
+  setupCatalog(firebase, { ...catalog, form });
 
   document.querySelector("[data-private]").hidden = false;
   pageStatus.hidden = true;

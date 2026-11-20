@@ -13,6 +13,6 @@ The app runs as static HTML, CSS, and JavaScript. Firebase Authentication and Re
 
 ## Use the app
 
-- Open **Customers & Services** to save billing details and service descriptions with their unit price, HSN/SAC, and GST percentage. Edit entries from the same page.
+- Use **Customer Details** to save or edit customer billing details. Use **Service Items** to save or edit service descriptions with their unit price, HSN/SAC, and GST percentage.
 - In **New Invoice**, choose saved entries and adjust the invoice fields as needed. **Submit** opens the printable invoice. Each invoice keeps a copy of the customer, service, tax, and total values it was issued with.
 - **Invoice History** lists saved invoices and any pending invoices on this browser. Opening a pending invoice retries its Firebase save. The app shows **Saved to Invoice History** after Firebase confirms the write.
