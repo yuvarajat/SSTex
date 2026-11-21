@@ -29,6 +29,17 @@ export function draftsPath(uid) {
   return `drafts/${uid}`;
 }
 
+export function watchInvoiceRecords({ database, databaseSdk }, path, render, onError) {
+  const { onValue, orderByChild, query, ref } = databaseSdk;
+  return onValue(query(ref(database, path), orderByChild("savedAt")), (snapshot) => {
+    const records = [];
+    snapshot.forEach((child) => {
+      records.push({ id: child.key, invoice: child.val() });
+    });
+    render(records.reverse());
+  }, onError);
+}
+
 function draftPath(uid, draftId) {
   if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(draftId)) {
     throw new Error("Invalid draft link.");

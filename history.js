@@ -1,6 +1,9 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import { formatInvoiceDate } from "./invoice-data.js";
-import { draftLink, draftsPath, invoiceLink, listPendingInvoices, migrateLocalDrafts, readLegacyInvoice } from "./invoice-store.js";
+import {
+  draftLink, draftsPath, invoiceLink, listPendingInvoices, migrateLocalDrafts,
+  readLegacyInvoice, watchInvoiceRecords,
+} from "./invoice-store.js";
 
 const pageStatus = document.getElementById("pageStatus");
 const historyStatus = document.getElementById("historyStatus");
@@ -38,23 +41,19 @@ function showLocalInvoices(uid) {
 }
 
 function watchDrafts(firebase) {
-  const { database, databaseSdk, user } = firebase;
-  const { onValue, orderByChild, query, ref } = databaseSdk;
   const section = document.getElementById("draftSection");
   const draftsStatus = document.getElementById("draftsStatus");
   section.hidden = false;
-  onValue(query(ref(database, draftsPath(user.uid)), orderByChild("savedAt")), (snapshot) => {
-    const links = [];
-    snapshot.forEach((child) => {
-      const draft = child.val();
+  watchInvoiceRecords(firebase, draftsPath(firebase.user.uid), (records) => {
+    const links = records.map(({ id, invoice }) => {
       const item = document.createElement("li");
       item.append(
-        makeLink(draft.invoiceNo, draftLink(child.key)),
-        ` · ${draft.customer.name} · ${rupees.format(draft.totals.grandTotal)}`,
+        makeLink(invoice.invoiceNo, draftLink(id)),
+        ` · ${invoice.customer.name} · ${rupees.format(invoice.totals.grandTotal)}`,
       );
-      links.push(item);
+      return item;
     });
-    document.getElementById("draftList").replaceChildren(...links.reverse());
+    document.getElementById("draftList").replaceChildren(...links);
     showStatus(draftsStatus, "");
     section.hidden = links.length === 0;
   }, (error) => {
@@ -68,26 +67,23 @@ function watchDrafts(firebase) {
 async function start() {
   const firebase = await requireAccount();
   if (!firebase) return;
-  const { database, databaseSdk, user } = firebase;
+  const { user } = firebase;
   document.querySelector("[data-private]").hidden = false;
   showStatus(pageStatus, "");
   showLocalInvoices(user.uid);
   window.addEventListener("storage", () => showLocalInvoices(user.uid));
   watchDrafts(firebase);
-  const { onValue, orderByChild, query, ref } = databaseSdk;
-  onValue(query(ref(database, "invoices"), orderByChild("savedAt")), (snapshot) => {
-    const rows = [];
-    snapshot.forEach((child) => {
-      const invoice = child.val();
+  watchInvoiceRecords(firebase, "invoices", (records) => {
+    const rows = records.map(({ id, invoice }) => {
       const row = document.createElement("tr");
       const number = row.insertCell();
-      number.append(makeLink(invoice.invoiceNo, invoiceLink(child.key)));
+      number.append(makeLink(invoice.invoiceNo, invoiceLink(id)));
       row.insertCell().textContent = formatInvoiceDate(invoice.invoiceDate);
       row.insertCell().textContent = invoice.customer.name;
       row.insertCell().textContent = rupees.format(invoice.totals.grandTotal);
-      rows.push(row);
+      return row;
     });
-    document.getElementById("invoiceList").replaceChildren(...rows.reverse());
+    document.getElementById("invoiceList").replaceChildren(...rows);
     document.getElementById("invoiceTable").hidden = rows.length === 0;
     showStatus(historyStatus, rows.length ? "" : "No saved invoices yet.");
   }, (error) => {

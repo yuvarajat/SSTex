@@ -13,6 +13,7 @@ The app runs as static HTML, CSS, and JavaScript. Firebase Authentication and Re
 
 ## Use the app
 
+- After sign-in, **Dashboard** shows finalized invoice totals, open drafts, and links to recent activity.
 - Use **Customer Details** to save or edit customer billing details. Use **Service Items** to save or edit service descriptions with their unit price, HSN/SAC, and GST percentage.
 - In **New Invoice**, choose saved entries and adjust the invoice fields as needed. **Preview invoice** saves an editable draft online and opens the review copy. You can download a marked draft PDF or reopen the draft from **Invoice History**. **Finalize invoice** moves the draft to the saved invoices and records the customer, service, tax, and total values it was issued with.
 - **Invoice History** lists saved invoices and any pending invoices on this browser. Opening a pending invoice retries its Firebase save. The app shows **Saved to Invoice History** after Firebase confirms the write.

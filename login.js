@@ -20,7 +20,7 @@ visibility.hidden = false;
 try {
   const { auth, authSdk } = await connectFirebase();
   auth.onAuthStateChanged((user) => {
-    if (user) location.replace("calc.html");
+    if (user) location.replace("dashboard.html");
   });
   await auth.authStateReady();
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | SS Tex</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="icon" href="media/SST Logo.png" />
+  </head>
+  <body class="workspace">
+    <nav class="app-nav" aria-label="Invoice app"></nav>
+    <div class="workspace-content">
+      <p id="pageStatus" class="app-status is-loading" role="status">Signing in…</p>
+      <main class="dashboard" data-private hidden>
+        <header class="dashboard-header">
+          <h1>Dashboard</h1>
+          <a class="button dashboard-create" href="calc.html"><span aria-hidden="true">+</span> New invoice</a>
+        </header>
+
+        <dl class="dashboard-metrics" aria-label="Invoice summary">
+          <div class="panel dashboard-metric dashboard-month">
+            <dt>Invoiced this month</dt>
+            <dd id="monthlyTotal">—</dd>
+            <dd id="currentMonth" class="dashboard-period"></dd>
+          </div>
+          <div class="panel dashboard-metric">
+            <dt>Finalized invoices</dt>
+            <dd id="invoiceCount">—</dd>
+          </div>
+          <div class="panel dashboard-metric">
+            <dt><a href="#recentDraftsHeading">Open drafts</a></dt>
+            <dd id="draftCount">—</dd>
+          </div>
+        </dl>
+
+        <div class="dashboard-activity">
+          <section class="panel" aria-labelledby="recentInvoicesHeading">
+            <header class="dashboard-panel-header">
+              <h2 id="recentInvoicesHeading">Recent invoices</h2>
+              <a href="history.html">View invoice history</a>
+            </header>
+            <p id="recentInvoiceStatus" class="list-status is-loading" role="status">Loading invoices…</p>
+            <ul id="recentInvoiceList" class="entry-list dashboard-list"></ul>
+          </section>
+          <section class="panel" aria-labelledby="recentDraftsHeading">
+            <header class="dashboard-panel-header">
+              <h2 id="recentDraftsHeading">Recent drafts</h2>
+              <a id="allDraftsLink" href="history.html#draftSection" hidden>View all drafts</a>
+            </header>
+            <p id="recentDraftStatus" class="list-status is-loading" role="status">Loading drafts…</p>
+            <ul id="recentDraftList" class="entry-list dashboard-list"></ul>
+          </section>
+        </div>
+      </main>
+    </div>
+    <footer class="app-footer"></footer>
+    <script type="module" src="app-footer.js"></script>
+    <script type="module" src="app-tabs.js"></script>
+    <script type="module" src="dashboard.js"></script>
+  </body>
+</html>

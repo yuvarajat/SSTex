@@ -1,4 +1,5 @@
 const tabs = [
+  { label: "Dashboard", href: "dashboard.html" },
   { label: "New Invoice", href: "calc.html" },
   { label: "Invoice History", href: "history.html" },
   { label: "Customer Details", href: "catalog.html" },
