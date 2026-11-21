@@ -31,6 +31,7 @@ page[size="A4"] {
 /* Main Page Content */
 
 .main-grid {
+  font-size: 14px;
   padding: 20px;
   /* margin: 10px; */
 }
@@ -74,11 +75,11 @@ page[size="A4"] {
 }
 
 .bname {
-  font-size: larger;
+  font-size: 1.2rem;
 }
 
 .bslogan {
-  font-size: smaller;
+  font-size: .833333rem;
 }
 
 .oname {
