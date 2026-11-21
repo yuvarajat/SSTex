@@ -1,7 +1,8 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import { formatInvoiceDate, invoiceKey, ITEMS_PER_PAGE } from "./invoice-data.js";
 import {
-  invoiceLink, readLegacyInvoice, readPendingInvoice, removePendingInvoice, saveInvoice,
+  clearFinalizedInvoice, draftLink, invoiceLink, queueInvoice, readDraft, readLegacyInvoice,
+  readPendingInvoice, saveDraft, saveInvoice,
 } from "./invoice-store.js";
 
 const notice = document.getElementById("billNotice");
@@ -12,6 +13,8 @@ const historyLink = document.getElementById("backToHistory");
 const invoicePages = document.getElementById("invoicePages");
 const copyButton = document.getElementById("toggler");
 const downloadStatus = document.getElementById("downloadStatus");
+const draftStatus = document.getElementById("draftStatus");
+const finalizeButton = document.getElementById("finalizeInvoice");
 
 function showStatus(message, loading = false) {
   status.textContent = message;
@@ -59,7 +62,7 @@ function renderInvoicePage(page, invoice, pageIndex, isLastPage) {
   }
 }
 
-function renderInvoice(invoice) {
+function renderInvoice(invoice, isDraft) {
   const lastRow = Math.max(1, ...Object.keys(invoice.items).map(Number));
   const pageCount = Math.ceil(lastRow / ITEMS_PER_PAGE);
   const firstPage = invoicePages.firstElementChild;
@@ -67,6 +70,12 @@ function renderInvoice(invoice) {
   for (let index = 1; index < pageCount; index++) pages.push(firstPage.cloneNode(true));
   pages.forEach((page, index) => renderInvoicePage(page, invoice, index, index === pageCount - 1));
   invoicePages.append(...pages.slice(1));
+  if (isDraft) {
+    for (const label of invoicePages.querySelectorAll(".invoice-copy-label")) {
+      label.textContent = "DRAFT · FOR REVIEW";
+      label.classList.add("draft-label");
+    }
+  }
   document.querySelector("[data-private]").hidden = false;
 }
 
@@ -78,18 +87,20 @@ function toggleContent() {
   for (const label of invoicePages.querySelectorAll(".invoice-copy-label")) label.textContent = text;
 }
 
-async function downloadPDF(event) {
+async function downloadPDF(event, isDraft = false) {
   const button = event.currentTarget;
+  const buttonLabel = button.textContent;
   const [first, ...remaining] = invoicePages.querySelectorAll(".main-grid");
   const options = {
     margin: 0,
-    filename: "SS Tex Invoice.pdf",
+    filename: isDraft ? "SS Tex Invoice - DRAFT.pdf" : "SS Tex Invoice.pdf",
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 3 },
     jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
   };
   button.disabled = true;
   copyButton.disabled = true;
+  finalizeButton.disabled = true;
   button.textContent = "Preparing PDF…";
   downloadStatus.hidden = true;
   try {
@@ -105,13 +116,59 @@ async function downloadPDF(event) {
     }
     pdf.save(options.filename);
   } catch {
-    downloadStatus.textContent = "Could not download the invoice. Try again or use Print.";
-    downloadStatus.hidden = false;
+    if (isDraft) {
+      draftStatus.textContent = "Could not download the draft. Try again.";
+    } else {
+      downloadStatus.textContent = "Could not download the invoice. Try again or use Print.";
+      downloadStatus.hidden = false;
+    }
   } finally {
     button.disabled = false;
     copyButton.disabled = false;
-    button.textContent = "Download";
+    finalizeButton.disabled = false;
+    button.textContent = buttonLabel;
   }
+}
+
+function showDraftActions(firebase, draft, isPreview) {
+  const { user } = firebase;
+  const download = document.getElementById("downloadDraft");
+  document.getElementById("editDraft").href = draftLink(draft.draftId, { edit: true, preview: isPreview });
+  document.getElementById("draftActions").hidden = false;
+  document.getElementById("finalInvoiceActions").hidden = true;
+  download.addEventListener("click", (event) => downloadPDF(event, true));
+
+  const save = document.getElementById("saveDraft");
+  save.addEventListener("click", () => {
+    try {
+      saveDraft(user.uid, draft);
+      draftStatus.textContent = "Draft saved on this device. Find it in Invoice History.";
+    } catch {
+      draftStatus.textContent = "Could not save this draft. Keep this tab open to return to the preview.";
+    }
+  });
+
+  finalizeButton.addEventListener("click", async () => {
+    finalizeButton.disabled = true;
+    download.disabled = true;
+    try {
+      queueInvoice(user.uid, draft);
+    } catch {
+      draftStatus.textContent = "Finalizing invoice… Keep this page open.";
+      try {
+        await saveInvoice(firebase, draft);
+        clearFinalizedInvoice(user.uid, draft);
+        location.replace(invoiceLink(invoiceKey(draft.invoiceNo)));
+      } catch (error) {
+        draftStatus.textContent = error.code === "duplicate-invoice" ? error.message
+          : databaseError(error, "Could not finalize the invoice. Your preview is still available.");
+        finalizeButton.disabled = false;
+        download.disabled = false;
+      }
+      return;
+    }
+    location.replace(invoiceLink(draft.submissionId, true));
+  });
 }
 
 function syncPending(firebase, invoice) {
@@ -125,7 +182,7 @@ function syncPending(firebase, invoice) {
     try {
       await saveInvoice(firebase, invoice);
       history.replaceState(null, "", invoiceLink(invoiceKey(invoice.invoiceNo)));
-      removePendingInvoice(firebase.user.uid, invoice.submissionId);
+      clearFinalizedInvoice(firebase.user.uid, invoice);
       showStatus("Saved to Invoice History.");
       setTimeout(() => showStatus(""), 3000);
     } catch (error) {
@@ -151,10 +208,14 @@ async function start() {
   const firebase = await requireAccount();
   if (!firebase) return;
   const params = new URLSearchParams(location.search);
+  const previewId = params.get("preview");
+  const draftId = previewId ?? params.get("draft");
   const pendingId = params.get("pending");
   const id = params.get("id");
   let invoice;
-  if (pendingId) {
+  if (draftId) {
+    invoice = readDraft(firebase.user.uid, draftId, Boolean(previewId));
+  } else if (pendingId) {
     invoice = readPendingInvoice(firebase.user.uid, pendingId);
   } else if (id !== null) {
     if (!/^[\w!%'()~*\-]+$/.test(id)) throw new Error("Invalid invoice link.");
@@ -169,7 +230,12 @@ async function start() {
   }
 
   if (!invoice) throw new Error("This invoice could not be found.");
-  renderInvoice(invoice);
+  renderInvoice(invoice, Boolean(draftId));
+  if (draftId) {
+    showDraftActions(firebase, invoice, Boolean(previewId));
+    showStatus("");
+    return;
+  }
   copyButton.addEventListener("click", toggleContent);
   document.getElementById("printInvoice").addEventListener("click", () => window.print());
   document.getElementById("downloadInvoice").addEventListener("click", downloadPDF);

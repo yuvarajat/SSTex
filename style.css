@@ -47,6 +47,12 @@ page[size="A4"] {
   color: gray;
 }
 
+.header > .draft-label {
+  color: #922d27;
+  border-color: currentColor;
+  font-weight: bold;
+}
+
 .main-table {
   width: 19.7cm;
   height: 27.7cm;
@@ -648,6 +654,18 @@ button:disabled {
   margin-block: 1rem;
 }
 
+#draftActions button {
+  margin: 0;
+}
+
+#finalizeInvoice {
+  background-color: #1f618d;
+}
+
+#draftStatus:empty {
+  margin: 0;
+}
+
 .bill-notice {
   position: fixed;
   z-index: 2;
@@ -690,6 +708,7 @@ button:disabled {
   }
 
   .bill-notice,
+  #draftActions,
   .invoice-actions {
     display: none;
   }

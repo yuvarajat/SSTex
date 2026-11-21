@@ -22,6 +22,15 @@
       <a id="backToHistory" href="history.html" hidden>Invoice History</a>
     </div>
     <div data-private hidden>
+    <section id="draftActions" aria-label="Invoice preview" hidden>
+      <div class="bill-navigation">
+        <a id="editDraft">Back to edit</a>
+        <button id="saveDraft" type="button">Save as draft</button>
+        <button id="downloadDraft" type="button">Download draft PDF</button>
+        <button id="finalizeInvoice" type="button">Finalize invoice</button>
+      </div>
+      <p id="draftStatus" class="ta-center" role="status"></p>
+    </section>
     <div id="invoicePages">
     <page size="A4" class="invoice-page">
       <div class="main-grid">
@@ -196,7 +205,7 @@
     </div>
     <div class="invoice-actions">
     <br><br><br>
-    <div class="print-button">
+    <div class="print-button" id="finalInvoiceActions">
       <button type="button" id="toggler">ORIGINAL FOR RECIPIENT</button>
       <button id="downloadInvoice" type="button">Download</button>
       <button id="printInvoice" type="button">Print</button>

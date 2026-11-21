@@ -1,6 +1,6 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import { formatInvoiceDate } from "./invoice-data.js";
-import { invoiceLink, listPendingInvoices, readLegacyInvoice } from "./invoice-store.js";
+import { draftLink, invoiceLink, listDrafts, listPendingInvoices, readLegacyInvoice } from "./invoice-store.js";
 
 const pageStatus = document.getElementById("pageStatus");
 const historyStatus = document.getElementById("historyStatus");
@@ -19,8 +19,18 @@ function makeLink(number, href) {
   return link;
 }
 
-function showPending(uid) {
+function showLocalInvoices(uid) {
   try {
+    const drafts = listDrafts(uid);
+    document.getElementById("draftSection").hidden = drafts.length === 0;
+    document.getElementById("draftList").replaceChildren(...drafts.map((draft) => {
+      const item = document.createElement("li");
+      item.append(
+        makeLink(draft.invoiceNo, draftLink(draft.draftId)),
+        ` · ${draft.customer.name} · ${rupees.format(draft.totals.grandTotal)}`,
+      );
+      return item;
+    }));
     const pending = listPendingInvoices(uid);
     document.getElementById("pendingSection").hidden = pending.length === 0;
     document.getElementById("pendingList").replaceChildren(...pending.map((invoice) => {
@@ -43,8 +53,8 @@ async function start() {
   const { database, databaseSdk, user } = firebase;
   document.querySelector("[data-private]").hidden = false;
   showStatus(pageStatus, "");
-  showPending(user.uid);
-  window.addEventListener("storage", () => showPending(user.uid));
+  showLocalInvoices(user.uid);
+  window.addEventListener("storage", () => showLocalInvoices(user.uid));
   const { onValue, orderByChild, query, ref } = databaseSdk;
   onValue(query(ref(database, "invoices"), orderByChild("savedAt")), (snapshot) => {
     const rows = [];

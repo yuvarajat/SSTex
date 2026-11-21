@@ -1,10 +1,10 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import {
   calculateLineAmount, calculateTotals, fillCustomer, financialYearSuffix,
-  invoiceKey, MAX_ITEMS, readCustomer, validateCustomer,
+  MAX_ITEMS, readCustomer, validateCustomer,
 } from "./invoice-data.js";
 import {
-  invoiceLink, queueInvoice, readPendingInvoice, removePendingInvoice, saveInvoice,
+  draftLink, readDraft, readPendingInvoice, stageDraft,
 } from "./invoice-store.js";
 
 const form = document.getElementById("form");
@@ -106,7 +106,7 @@ function refreshFinancialYear() {
     invoiceDate.value ? `/${financialYearSuffix(invoiceDate.value)}` : "";
 }
 
-function restorePending(invoice) {
+function restoreInvoice(invoice) {
   fillCustomer(form, invoice.customer);
   invoiceNo.value = invoice.invoiceNo.replace(/\/\d{2}-\d{2}$/, "");
   invoiceDate.value = invoice.invoiceDate;
@@ -186,14 +186,19 @@ async function start() {
   if (!firebase) return;
   const { user } = firebase;
   createRows();
-  const pendingId = new URLSearchParams(location.search).get("pending");
-  if (pendingId) {
+  const params = new URLSearchParams(location.search);
+  const pendingId = params.get("pending");
+  const previewId = params.get("preview");
+  const draftId = previewId ?? params.get("draft");
+  let restoredInvoice;
+  if (pendingId || draftId) {
     try {
-      const pending = readPendingInvoice(user.uid, pendingId);
-      if (pending) restorePending(pending);
-      else status(formStatus, "This device no longer has that pending invoice.");
+      restoredInvoice = pendingId ? readPendingInvoice(user.uid, pendingId)
+        : readDraft(user.uid, draftId, Boolean(previewId));
+      if (restoredInvoice) restoreInvoice(restoredInvoice);
+      else status(formStatus, "This device no longer has that invoice copy.");
     } catch {
-      status(formStatus, "This device could not reopen the pending invoice.");
+      status(formStatus, "This device could not reopen that invoice copy.");
     }
   }
   watchCatalog(firebase);
@@ -236,7 +241,7 @@ async function start() {
     }, 0);
   });
 
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
     status(formStatus, "");
     const customer = readCustomer(form);
@@ -245,7 +250,7 @@ async function start() {
     const items = readItems(true);
     if (!validateCustomer(form, customer)) return;
     if (!Object.keys(items).length) {
-      status(formStatus, "Add at least one service before submitting.");
+      status(formStatus, "Add at least one service before previewing the invoice.");
       rows[0].description.focus();
       return;
     }
@@ -257,7 +262,9 @@ async function start() {
 
     const invoice = {
       schemaVersion: 1,
+      draftId: restoredInvoice?.draftId ?? crypto.randomUUID(),
       submissionId: crypto.randomUUID(),
+      previousPendingId: pendingId ?? restoredInvoice?.previousPendingId ?? null,
       invoiceNo: `${number}/${financialYearSuffix(invoiceDate.value)}`,
       invoiceDate: invoiceDate.value,
       customer,
@@ -266,25 +273,13 @@ async function start() {
       totals,
       queuedAt: Date.now(),
     };
-    const button = form.querySelector('button[type="submit"]');
-    button.disabled = true;
     try {
-      queueInvoice(user.uid, invoice);
+      stageDraft(user.uid, invoice);
     } catch {
-      status(formStatus, "Your browser could not save a copy. Keep this page open while the invoice saves…", true);
-      try {
-        await saveInvoice(firebase, invoice);
-        location.assign(invoiceLink(invoiceKey(invoice.invoiceNo)));
-      } catch (error) {
-        status(formStatus, error.code === "duplicate-invoice" ? error.message
-          : databaseError(error, "Could not save the invoice. Your details are still in the form."));
-        button.disabled = false;
-      }
+      status(formStatus, "This browser could not open the preview. Your details are still in the form.");
       return;
     }
-
-    if (pendingId) removePendingInvoice(user.uid, pendingId);
-    location.assign(invoiceLink(invoice.submissionId, true));
+    location.assign(draftLink(invoice.draftId, { preview: true }));
   });
 }
 

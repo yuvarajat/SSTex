@@ -13,7 +13,7 @@ export function readPendingInvoice(uid, submissionId) {
   return value ? JSON.parse(value) : null;
 }
 
-export function removePendingInvoice(uid, submissionId) {
+function removePendingInvoice(uid, submissionId) {
   localStorage.removeItem(pendingPrefix(uid) + submissionId);
 }
 
@@ -25,6 +25,52 @@ export function listPendingInvoices(uid) {
     .sort((first, second) => second.queuedAt - first.queuedAt);
 }
 
+function draftPrefix(uid) {
+  return `sstex:draft:${uid}:`;
+}
+
+export function stageDraft(uid, draft) {
+  sessionStorage.setItem(draftPrefix(uid) + draft.draftId, JSON.stringify(draft));
+}
+
+export function saveDraft(uid, draft) {
+  localStorage.setItem(draftPrefix(uid) + draft.draftId, JSON.stringify(draft));
+}
+
+export function readDraft(uid, draftId, preview) {
+  const storage = preview ? sessionStorage : localStorage;
+  const value = storage.getItem(draftPrefix(uid) + draftId);
+  return value ? JSON.parse(value) : null;
+}
+
+export function listDrafts(uid) {
+  return Object.keys(localStorage)
+    .filter((key) => key.startsWith(draftPrefix(uid)))
+    .map((key) => JSON.parse(localStorage.getItem(key)))
+    .filter(Boolean)
+    .sort((first, second) => second.queuedAt - first.queuedAt);
+}
+
+export function clearFinalizedInvoice(uid, { draftId, queuedAt, previousPendingId, submissionId }) {
+  try {
+    removePendingInvoice(uid, submissionId);
+    if (previousPendingId) removePendingInvoice(uid, previousPendingId);
+    if (!draftId) return;
+    const key = draftPrefix(uid) + draftId;
+    for (const storage of [sessionStorage, localStorage]) {
+      const stored = JSON.parse(storage.getItem(key));
+      if (stored && stored.queuedAt <= queuedAt) storage.removeItem(key);
+    }
+  } catch {
+    // The invoice is saved even if this browser can no longer clear its local copies.
+  }
+}
+
+export function draftLink(draftId, { edit = false, preview = false } = {}) {
+  const params = new URLSearchParams({ [preview ? "preview" : "draft"]: draftId });
+  return `${edit ? "calc.html" : "bill.html"}?${params}`;
+}
+
 export function invoiceLink(value, pending = false) {
   const params = new URLSearchParams({ [pending ? "pending" : "id"]: value });
   return `bill.html?${params}`;
@@ -33,7 +79,7 @@ export function invoiceLink(value, pending = false) {
 export async function saveInvoice({ database, databaseSdk }, invoice) {
   const { get, ref, serverTimestamp, set } = databaseSdk;
   const reference = ref(database, `invoices/${invoiceKey(invoice.invoiceNo)}`);
-  const { queuedAt, ...record } = invoice;
+  const { queuedAt, draftId, previousPendingId, ...record } = invoice;
   try {
     await set(reference, { ...record, savedAt: serverTimestamp() });
   } catch (error) {
