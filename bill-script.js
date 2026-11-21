@@ -34,7 +34,7 @@ function renderInvoice(invoice) {
     set(`par${row}`, item?.description);
     set(`hsn${row}`, item?.hsn);
     set(`rat${row}`, item?.rate);
-    set(`qty${row}`, item?.quantity);
+    set(`qty${row}`, item?.quantityUnit ? `${item.quantity} ${item.quantityUnit}` : item?.quantity);
     set(`amo${row}`, item?.amount);
   }
 

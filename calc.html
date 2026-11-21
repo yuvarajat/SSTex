@@ -122,7 +122,17 @@
         </td>
         <td data-label="HSN/SAC"><input data-field="hsn" aria-label="HSN/SAC code" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" value="9987" /></td>
         <td data-label="Rate (₹)"><input data-field="rate" aria-label="Rate" type="number" min="0" max="999999999.99" step="0.01" /></td>
-        <td data-label="Quantity"><input data-field="quantity" aria-label="Quantity" type="number" min="0.001" max="999999.999" step="0.001" /></td>
+        <td class="line-quantity" data-label="Quantity">
+          <div class="quantity-fields">
+            <input data-field="quantity" aria-label="Quantity" type="number" min="0.001" max="999999.999" step="0.001" />
+            <select data-field="quantityUnit" aria-label="Quantity unit">
+              <option value="">No unit</option>
+              <option value="m/c">m/c (machine)</option>
+              <option value="per">per (person)</option>
+              <option value="spl">spl (spindle)</option>
+            </select>
+          </div>
+        </td>
         <td data-label="GST %"><input data-field="gstPercent" aria-label="GST percentage" type="number" min="0" max="100" step="0.01" value="18" /></td>
         <td data-label="Amount (₹)"><input data-field="amount" aria-label="Amount" readonly /></td>
       </tr>

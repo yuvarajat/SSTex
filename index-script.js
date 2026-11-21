@@ -76,10 +76,12 @@ function readItems(validate = false) {
     const amount = calculateLineAmount(Number(row.rate.value), Number(row.quantity.value));
     row.amount.value = row.rate.value && row.quantity.value ? amount : "";
     if (hasEntry) {
-      items[index + 1] = {
+      const item = {
         description, hsn, rate: Number(row.rate.value), quantity: Number(row.quantity.value),
         gstPercent: Number(row.gstPercent.value), amount,
       };
+      if (row.quantityUnit.value) item.quantityUnit = row.quantityUnit.value;
+      items[index + 1] = item;
     }
   });
   return items;
@@ -118,6 +120,7 @@ function restorePending(invoice) {
     for (const key of ["description", "hsn", "rate", "quantity", "gstPercent"]) {
       row[key].value = item[key];
     }
+    row.quantityUnit.value = item.quantityUnit ?? "";
   }
   refreshTotals();
 }

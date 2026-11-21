@@ -62,6 +62,9 @@
             "quantity": {
               ".validate": "newData.isNumber() && newData.val() >= 0.001 && newData.val() <= 999999.999"
             },
+            "quantityUnit": {
+              ".validate": "newData.val() == 'm/c' || newData.val() == 'per' || newData.val() == 'spl'"
+            },
             "amount": {
               ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999999"
             },
