@@ -58,6 +58,10 @@ page[size="A4"] {
   grid-template-rows: auto 1fr auto auto 10fr repeat(4, auto);
 }
 
+.invoice-continuation .main-table {
+  grid-template-rows: auto auto auto auto 1fr;
+}
+
 .item {
   border-style: solid;
   border-width: 1px;
@@ -254,16 +258,16 @@ page[size="A4"] {
   align-items: center;
 }
 
-#millName {
+.invoice-customer-name {
   width: 300px;
 }
 
-#millAddress {
+.invoice-customer-address {
   width: 300px;
   height: 100px;
 }
 
-#amountInWords {
+.invoice-amount-in-words {
   width: 612px;
 }
 
@@ -323,20 +327,6 @@ button[type="button"] {
 
 td #total, td #igst, td #cgst, td #sgst, td #totalAmount {
   width: 145px;
-}
-
-@media print {
-  button[type="button"] {
-    display: none;
-  }
-
-  .main-table{
-    overflow: hidden;
-  }
-
-  .item11 {
-    overflow: hidden;
-  }
 }
 
 /* .bill-margin-padding {
@@ -680,9 +670,27 @@ button:disabled {
   margin-top: .4rem;
 }
 
+@page {
+  size: A4;
+  margin: 0;
+}
+
 @media print {
+  body {
+    margin: 0;
+  }
+
+  .invoice-page {
+    box-sizing: border-box;
+    break-inside: avoid;
+  }
+
+  .invoice-page + .invoice-page {
+    break-before: page;
+  }
+
   .bill-notice,
-  .bill-navigation {
+  .invoice-actions {
     display: none;
   }
 }

@@ -1,4 +1,4 @@
-import { invoiceKey, MAX_ITEMS } from "./invoice-data.js";
+import { invoiceKey, ITEMS_PER_PAGE } from "./invoice-data.js";
 
 function pendingPrefix(uid) {
   return `sstex:pending:${uid}:`;
@@ -53,7 +53,7 @@ export function readLegacyInvoice() {
   if (!value("invoiceNo") || !value("invoiceDate")) return null;
 
   const items = {};
-  for (let row = 1; row <= MAX_ITEMS; row++) {
+  for (let row = 1; row <= ITEMS_PER_PAGE; row++) {
     items[row] = {
       serial: value(`sno${row}`),
       description: value(`par${row}`),

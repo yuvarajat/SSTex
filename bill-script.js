@@ -1,5 +1,5 @@
 import { databaseError, requireAccount } from "./firebase.js";
-import { formatInvoiceDate, invoiceKey, MAX_ITEMS } from "./invoice-data.js";
+import { formatInvoiceDate, invoiceKey, ITEMS_PER_PAGE } from "./invoice-data.js";
 import {
   invoiceLink, readLegacyInvoice, readPendingInvoice, removePendingInvoice, saveInvoice,
 } from "./invoice-store.js";
@@ -9,6 +9,9 @@ const status = document.getElementById("pageStatus");
 const retryButton = document.getElementById("retrySave");
 const editLink = document.getElementById("editPending");
 const historyLink = document.getElementById("backToHistory");
+const invoicePages = document.getElementById("invoicePages");
+const copyButton = document.getElementById("toggler");
+const downloadStatus = document.getElementById("downloadStatus");
 
 function showStatus(message, loading = false) {
   status.textContent = message;
@@ -16,8 +19,8 @@ function showStatus(message, loading = false) {
   notice.hidden = !message;
 }
 
-function renderInvoice(invoice) {
-  const set = (id, value) => { document.getElementById(id).textContent = value ?? ""; };
+function renderInvoicePage(page, invoice, pageIndex, isLastPage) {
+  const set = (id, value) => { page.querySelector(`#${id}`).textContent = value ?? ""; };
   const { customer, totals } = invoice;
   const suffixIndex = invoice.invoiceNo.lastIndexOf("/");
   set("invoiceNo", invoice.invoiceNo.slice(0, suffixIndex));
@@ -28,9 +31,10 @@ function renderInvoice(invoice) {
   set("millGSTIN", customer.gstin);
   set("placeOfSupply", customer.placeOfSupply);
 
-  for (let row = 1; row <= MAX_ITEMS; row++) {
-    const item = invoice.items[row];
-    set(`sno${row}`, item?.serial ?? (item ? row : ""));
+  for (let row = 1; row <= ITEMS_PER_PAGE; row++) {
+    const serial = pageIndex * ITEMS_PER_PAGE + row;
+    const item = invoice.items[serial];
+    set(`sno${row}`, item?.serial ?? (item ? serial : ""));
     set(`par${row}`, item?.description);
     set(`hsn${row}`, item?.hsn);
     set(`rat${row}`, item?.rate);
@@ -38,26 +42,45 @@ function renderInvoice(invoice) {
     set(`amo${row}`, item?.amount);
   }
 
-  set("total", totals.subtotal);
-  set("igst", totals.igst);
-  set("cgst", totals.cgst);
-  set("sgst", totals.sgst);
-  set("totalAmount", `${totals.grandTotal}/-`);
-  set("amountInWords", `${totals.amountInWords} Rupees Only`);
+  if (isLastPage) {
+    set("total", totals.subtotal);
+    set("igst", totals.igst);
+    set("cgst", totals.cgst);
+    set("sgst", totals.sgst);
+    set("totalAmount", `${totals.grandTotal}/-`);
+    set("amountInWords", `${totals.amountInWords} Rupees Only`);
+  } else {
+    page.querySelector(".main-grid").classList.add("invoice-continuation");
+    page.querySelectorAll(".item11 ~ *").forEach((item) => item.remove());
+  }
+
+  if (pageIndex > 0) {
+    for (const field of page.querySelectorAll("[id]")) field.id += `-page${pageIndex + 1}`;
+  }
+}
+
+function renderInvoice(invoice) {
+  const lastRow = Math.max(1, ...Object.keys(invoice.items).map(Number));
+  const pageCount = Math.ceil(lastRow / ITEMS_PER_PAGE);
+  const firstPage = invoicePages.firstElementChild;
+  const pages = [firstPage];
+  for (let index = 1; index < pageCount; index++) pages.push(firstPage.cloneNode(true));
+  pages.forEach((page, index) => renderInvoicePage(page, invoice, index, index === pageCount - 1));
+  invoicePages.append(...pages.slice(1));
   document.querySelector("[data-private]").hidden = false;
 }
 
 function toggleContent() {
-  const button = document.getElementById("toggler");
-  const text = button.textContent === "ORIGINAL FOR RECIPIENT"
+  const text = copyButton.textContent === "ORIGINAL FOR RECIPIENT"
     ? "DUPLICATE FOR RECORDS"
     : "ORIGINAL FOR RECIPIENT";
-  button.textContent = text;
-  document.getElementById("oORd").textContent = text;
+  copyButton.textContent = text;
+  for (const label of invoicePages.querySelectorAll(".invoice-copy-label")) label.textContent = text;
 }
 
-function printToPDF() {
-  const element = document.querySelector(".main-grid");
+async function downloadPDF(event) {
+  const button = event.currentTarget;
+  const [first, ...remaining] = invoicePages.querySelectorAll(".main-grid");
   const options = {
     margin: 0,
     filename: "SS Tex Invoice.pdf",
@@ -65,7 +88,30 @@ function printToPDF() {
     html2canvas: { scale: 3 },
     jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
   };
-  window.html2pdf(element, options);
+  button.disabled = true;
+  copyButton.disabled = true;
+  button.textContent = "Preparing PDF…";
+  downloadStatus.hidden = true;
+  try {
+    const firstPage = window.html2pdf().set(options).from(first).toPdf();
+    const pdf = await firstPage.get("pdf");
+    const { inner: { width, height } } = await firstPage.get("pageSize");
+    for (const grid of remaining) {
+      const canvas = await window.html2pdf().set(options).from(grid).toCanvas().get("canvas");
+      const scale = Math.min(width / canvas.width, height / canvas.height);
+      pdf.addPage();
+      pdf.addImage(canvas.toDataURL("image/jpeg", options.image.quality), "JPEG",
+        0, 0, canvas.width * scale, canvas.height * scale);
+    }
+    pdf.save(options.filename);
+  } catch {
+    downloadStatus.textContent = "Could not download the invoice. Try again or use Print.";
+    downloadStatus.hidden = false;
+  } finally {
+    button.disabled = false;
+    copyButton.disabled = false;
+    button.textContent = "Download";
+  }
 }
 
 function syncPending(firebase, invoice) {
@@ -124,9 +170,9 @@ async function start() {
 
   if (!invoice) throw new Error("This invoice could not be found.");
   renderInvoice(invoice);
-  document.getElementById("toggler").addEventListener("click", toggleContent);
+  copyButton.addEventListener("click", toggleContent);
   document.getElementById("printInvoice").addEventListener("click", () => window.print());
-  document.getElementById("downloadInvoice").addEventListener("click", printToPDF);
+  document.getElementById("downloadInvoice").addEventListener("click", downloadPDF);
   if (pendingId) await syncPending(firebase, invoice);
   else showStatus("");
 }

@@ -22,10 +22,11 @@
       <a id="backToHistory" href="history.html" hidden>Invoice History</a>
     </div>
     <div data-private hidden>
-    <page size="A4">
+    <div id="invoicePages">
+    <page size="A4" class="invoice-page">
       <div class="main-grid">
         <div class="header">
-          <b>TAX INVOICE</b> &nbsp; <span id="oORd">ORIGINAL FOR RECIPIENT</span>
+          <b>TAX INVOICE</b> &nbsp; <span id="oORd" class="invoice-copy-label">ORIGINAL FOR RECIPIENT</span>
         </div>
         <div class="main-table">
           <div class="item item1 ta-center">
@@ -60,8 +61,8 @@
           <div class="item item3">
             <div class="bill-item1">
               BILL TO <br />
-              <span id="millName" class="fw-bold"></span> <br />
-              <span id="millAddress" class="fw-bold"></span> <br />
+              <span id="millName" class="invoice-customer-name fw-bold"></span> <br />
+              <span id="millAddress" class="invoice-customer-address fw-bold"></span> <br />
             </div>
             <div class="bill-item2">
               <b>GSTIN:</b> <span id="millGSTIN"></span> 
@@ -176,7 +177,7 @@
           <div id="totalAmount" class="item item29 ta-right fw-bold"></div>
           <div class="item item30">
             <b>Total Amount (in words)</b> <br />
-            <span id="amountInWords"></span>
+            <span id="amountInWords" class="invoice-amount-in-words"></span>
           </div>
           <div class="item item31 ta-center fw-bold">
             Yours Faithfully <br />
@@ -192,17 +193,21 @@
         </div>
       </div>
     </page>
+    </div>
+    <div class="invoice-actions">
     <br><br><br>
     <div class="print-button">
       <button type="button" id="toggler">ORIGINAL FOR RECIPIENT</button>
       <button id="downloadInvoice" type="button">Download</button>
       <button id="printInvoice" type="button">Print</button>
     </div>
+    <p id="downloadStatus" class="ta-center" role="status" hidden></p>
     <div class="bill-navigation">
       <a href="calc.html">New Invoice</a>
       <a href="history.html">Invoice History</a>
     </div>
     <footer class="app-footer"></footer>
+    </div>
     </div>
     <script type="module" src="app-footer.js"></script>
     <script type="module" src="bill-script.js"></script>

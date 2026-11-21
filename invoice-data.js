@@ -1,4 +1,5 @@
-export const MAX_ITEMS = 10;
+export const ITEMS_PER_PAGE = 10;
+export const MAX_ITEMS = ITEMS_PER_PAGE * 3;
 const MAX_TOTAL = 999999999999;
 
 const placesOfSupply = {
