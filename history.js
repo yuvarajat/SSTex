@@ -1,6 +1,6 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import { formatInvoiceDate } from "./invoice-data.js";
-import { draftLink, invoiceLink, listDrafts, listPendingInvoices, readLegacyInvoice } from "./invoice-store.js";
+import { draftLink, draftsPath, invoiceLink, listPendingInvoices, migrateLocalDrafts, readLegacyInvoice } from "./invoice-store.js";
 
 const pageStatus = document.getElementById("pageStatus");
 const historyStatus = document.getElementById("historyStatus");
@@ -21,16 +21,6 @@ function makeLink(number, href) {
 
 function showLocalInvoices(uid) {
   try {
-    const drafts = listDrafts(uid);
-    document.getElementById("draftSection").hidden = drafts.length === 0;
-    document.getElementById("draftList").replaceChildren(...drafts.map((draft) => {
-      const item = document.createElement("li");
-      item.append(
-        makeLink(draft.invoiceNo, draftLink(draft.draftId)),
-        ` · ${draft.customer.name} · ${rupees.format(draft.totals.grandTotal)}`,
-      );
-      return item;
-    }));
     const pending = listPendingInvoices(uid);
     document.getElementById("pendingSection").hidden = pending.length === 0;
     document.getElementById("pendingList").replaceChildren(...pending.map((invoice) => {
@@ -47,6 +37,34 @@ function showLocalInvoices(uid) {
   }
 }
 
+function watchDrafts(firebase) {
+  const { database, databaseSdk, user } = firebase;
+  const { onValue, orderByChild, query, ref } = databaseSdk;
+  const section = document.getElementById("draftSection");
+  const draftsStatus = document.getElementById("draftsStatus");
+  section.hidden = false;
+  onValue(query(ref(database, draftsPath(user.uid)), orderByChild("savedAt")), (snapshot) => {
+    const links = [];
+    snapshot.forEach((child) => {
+      const draft = child.val();
+      const item = document.createElement("li");
+      item.append(
+        makeLink(draft.invoiceNo, draftLink(child.key)),
+        ` · ${draft.customer.name} · ${rupees.format(draft.totals.grandTotal)}`,
+      );
+      links.push(item);
+    });
+    document.getElementById("draftList").replaceChildren(...links.reverse());
+    showStatus(draftsStatus, "");
+    section.hidden = links.length === 0;
+  }, (error) => {
+    showStatus(draftsStatus, databaseError(error, "Could not load drafts. Check your connection and reload."));
+  });
+  migrateLocalDrafts(firebase).catch(() => {
+    showStatus(pageStatus, "Some drafts from this browser could not sync. Reload to try again.");
+  });
+}
+
 async function start() {
   const firebase = await requireAccount();
   if (!firebase) return;
@@ -55,6 +73,7 @@ async function start() {
   showStatus(pageStatus, "");
   showLocalInvoices(user.uid);
   window.addEventListener("storage", () => showLocalInvoices(user.uid));
+  watchDrafts(firebase);
   const { onValue, orderByChild, query, ref } = databaseSdk;
   onValue(query(ref(database, "invoices"), orderByChild("savedAt")), (snapshot) => {
     const rows = [];

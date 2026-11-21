@@ -4,10 +4,6 @@ function pendingPrefix(uid) {
   return `sstex:pending:${uid}:`;
 }
 
-export function queueInvoice(uid, invoice) {
-  localStorage.setItem(pendingPrefix(uid) + invoice.submissionId, JSON.stringify(invoice));
-}
-
 export function readPendingInvoice(uid, submissionId) {
   const value = localStorage.getItem(pendingPrefix(uid) + submissionId);
   return value ? JSON.parse(value) : null;
@@ -25,30 +21,99 @@ export function listPendingInvoices(uid) {
     .sort((first, second) => second.queuedAt - first.queuedAt);
 }
 
-function draftPrefix(uid) {
+function legacyDraftPrefix(uid) {
   return `sstex:draft:${uid}:`;
 }
 
-export function stageDraft(uid, draft) {
-  sessionStorage.setItem(draftPrefix(uid) + draft.draftId, JSON.stringify(draft));
+export function draftsPath(uid) {
+  return `drafts/${uid}`;
 }
 
-export function saveDraft(uid, draft) {
-  localStorage.setItem(draftPrefix(uid) + draft.draftId, JSON.stringify(draft));
+function draftPath(uid, draftId) {
+  if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(draftId)) {
+    throw new Error("Invalid draft link.");
+  }
+  return `${draftsPath(uid)}/${draftId}`;
 }
 
-export function readDraft(uid, draftId, preview) {
-  const storage = preview ? sessionStorage : localStorage;
-  const value = storage.getItem(draftPrefix(uid) + draftId);
-  return value ? JSON.parse(value) : null;
+function invoiceRecord({ schemaVersion, submissionId, invoiceNo, invoiceDate, customer, items, interState, totals }) {
+  return { schemaVersion, submissionId, invoiceNo, invoiceDate, customer, items, interState, totals };
 }
 
-export function listDrafts(uid) {
-  return Object.keys(localStorage)
-    .filter((key) => key.startsWith(draftPrefix(uid)))
-    .map((key) => JSON.parse(localStorage.getItem(key)))
-    .filter(Boolean)
-    .sort((first, second) => second.queuedAt - first.queuedAt);
+function draftChanged() {
+  return Object.assign(new Error("This draft changed on another device. Open it from Invoice History to see the latest version."), {
+    code: "draft-changed",
+  });
+}
+
+export async function saveDraft({ database, databaseSdk, user }, draft, previousSubmissionId = null) {
+  const { get, ref, serverTimestamp, set } = databaseSdk;
+  const reference = ref(database, draftPath(user.uid, draft.draftId));
+  try {
+    await set(reference, {
+      ...invoiceRecord(draft),
+      invoiceKey: invoiceKey(draft.invoiceNo),
+      previousPendingId: draft.previousPendingId ?? null,
+      previousSubmissionId,
+      savedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    const latest = await get(reference).catch(() => null);
+    if (latest?.val()?.submissionId === draft.submissionId) return;
+    if (latest && (latest.val()?.submissionId ?? null) !== previousSubmissionId) throw draftChanged();
+    throw error;
+  }
+}
+
+async function readOnlineDraft({ database, databaseSdk, user }, draftId) {
+  const { get, ref } = databaseSdk;
+  const snapshot = await get(ref(database, draftPath(user.uid, draftId)));
+  return snapshot.exists() ? { ...snapshot.val(), draftId } : null;
+}
+
+async function migrateLegacyDraft(firebase, storage, key) {
+  const draft = JSON.parse(storage.getItem(key));
+  if (!draft) return null;
+  const { database, databaseSdk } = firebase;
+  const { get, ref } = databaseSdk;
+  const finalized = await get(ref(database, `invoices/${invoiceKey(draft.invoiceNo)}`));
+  let draftId = draft.draftId;
+  if (finalized.val()?.submissionId === draft.submissionId) {
+    draftId = null;
+  } else {
+    try {
+      await saveDraft(firebase, draft);
+    } catch (error) {
+      if (error.code !== "draft-changed") throw error;
+      // Preserve a local revision if the original draft already has newer online edits.
+      draftId = draft.submissionId;
+      await saveDraft(firebase, { ...draft, draftId });
+    }
+  }
+  if (JSON.parse(storage.getItem(key))?.submissionId === draft.submissionId) storage.removeItem(key);
+  return draftId;
+}
+
+export async function migrateLocalDrafts(firebase) {
+  const prefix = legacyDraftPrefix(firebase.user.uid);
+  for (const storage of [localStorage, sessionStorage]) {
+    const keys = Object.keys(storage).filter((key) => key.startsWith(prefix));
+    const results = await Promise.allSettled(keys.map((key) => migrateLegacyDraft(firebase, storage, key)));
+    if (results.some((result) => result.status === "rejected")) {
+      throw new Error("Some drafts from this browser could not sync. Reload to try again.");
+    }
+  }
+}
+
+export async function readDraft(firebase, draftId, legacyPreview = false) {
+  const key = legacyDraftPrefix(firebase.user.uid) + draftId;
+  if (!legacyPreview) {
+    const online = await readOnlineDraft(firebase, draftId);
+    if (online) return online;
+  }
+  const migratedId = await migrateLegacyDraft(firebase, legacyPreview ? sessionStorage : localStorage, key);
+  if (migratedId || legacyPreview) return readOnlineDraft(firebase, migratedId ?? draftId);
+  return null;
 }
 
 export function clearFinalizedInvoice(uid, { draftId, queuedAt, previousPendingId, submissionId }) {
@@ -56,18 +121,18 @@ export function clearFinalizedInvoice(uid, { draftId, queuedAt, previousPendingI
     removePendingInvoice(uid, submissionId);
     if (previousPendingId) removePendingInvoice(uid, previousPendingId);
     if (!draftId) return;
-    const key = draftPrefix(uid) + draftId;
+    const key = legacyDraftPrefix(uid) + draftId;
     for (const storage of [sessionStorage, localStorage]) {
       const stored = JSON.parse(storage.getItem(key));
-      if (stored && stored.queuedAt <= queuedAt) storage.removeItem(key);
+      if (stored?.submissionId === submissionId || (stored && stored.queuedAt <= queuedAt)) storage.removeItem(key);
     }
   } catch {
     // The invoice is saved even if this browser can no longer clear its local copies.
   }
 }
 
-export function draftLink(draftId, { edit = false, preview = false } = {}) {
-  const params = new URLSearchParams({ [preview ? "preview" : "draft"]: draftId });
+export function draftLink(draftId, { edit = false } = {}) {
+  const params = new URLSearchParams({ draft: draftId });
   return `${edit ? "calc.html" : "bill.html"}?${params}`;
 }
 
@@ -76,19 +141,25 @@ export function invoiceLink(value, pending = false) {
   return `bill.html?${params}`;
 }
 
-export async function saveInvoice({ database, databaseSdk }, invoice) {
-  const { get, ref, serverTimestamp, set } = databaseSdk;
-  const reference = ref(database, `invoices/${invoiceKey(invoice.invoiceNo)}`);
-  const { queuedAt, draftId, previousPendingId, ...record } = invoice;
+export async function saveInvoice({ database, databaseSdk, user }, invoice, finalizeDraft = false) {
+  const { get, ref, serverTimestamp, set, update } = databaseSdk;
+  const path = `invoices/${invoiceKey(invoice.invoiceNo)}`;
+  const draft = finalizeDraft && draftPath(user.uid, invoice.draftId);
+  const record = { ...invoiceRecord(invoice), savedAt: serverTimestamp() };
   try {
-    await set(reference, { ...record, savedAt: serverTimestamp() });
+    if (draft) await update(ref(database), { [path]: record, [draft]: null });
+    else await set(ref(database, path), record);
   } catch (error) {
-    const existing = await get(reference).catch(() => null);
+    const existing = await get(ref(database, path)).catch(() => null);
     if (existing?.val()?.submissionId === invoice.submissionId) return;
     if (existing?.exists()) {
       throw Object.assign(new Error("An invoice with this number is already saved."), {
         code: "duplicate-invoice",
       });
+    }
+    if (draft) {
+      const latest = await get(ref(database, draft)).catch(() => null);
+      if (latest && latest.val()?.submissionId !== invoice.submissionId) throw draftChanged();
     }
     throw error;
   }

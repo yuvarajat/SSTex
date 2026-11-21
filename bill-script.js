@@ -1,8 +1,8 @@
 import { databaseError, requireAccount } from "./firebase.js";
 import { formatInvoiceDate, invoiceKey, ITEMS_PER_PAGE } from "./invoice-data.js";
 import {
-  clearFinalizedInvoice, draftLink, invoiceLink, queueInvoice, readDraft, readLegacyInvoice,
-  readPendingInvoice, saveDraft, saveInvoice,
+  clearFinalizedInvoice, draftLink, invoiceLink, readDraft, readLegacyInvoice,
+  readPendingInvoice, saveInvoice,
 } from "./invoice-store.js";
 
 const notice = document.getElementById("billNotice");
@@ -130,44 +130,30 @@ async function downloadPDF(event, isDraft = false) {
   }
 }
 
-function showDraftActions(firebase, draft, isPreview) {
+function showDraftActions(firebase, draft) {
   const { user } = firebase;
   const download = document.getElementById("downloadDraft");
-  document.getElementById("editDraft").href = draftLink(draft.draftId, { edit: true, preview: isPreview });
+  document.getElementById("editDraft").href = draftLink(draft.draftId, { edit: true });
   document.getElementById("draftActions").hidden = false;
   document.getElementById("finalInvoiceActions").hidden = true;
   download.addEventListener("click", (event) => downloadPDF(event, true));
 
-  const save = document.getElementById("saveDraft");
-  save.addEventListener("click", () => {
-    try {
-      saveDraft(user.uid, draft);
-      draftStatus.textContent = "Draft saved on this device. Find it in Invoice History.";
-    } catch {
-      draftStatus.textContent = "Could not save this draft. Keep this tab open to return to the preview.";
-    }
-  });
+  draftStatus.textContent = "Draft saved online.";
 
   finalizeButton.addEventListener("click", async () => {
     finalizeButton.disabled = true;
     download.disabled = true;
+    draftStatus.textContent = "Finalizing invoice… Keep this tab open.";
     try {
-      queueInvoice(user.uid, draft);
-    } catch {
-      draftStatus.textContent = "Finalizing invoice… Keep this page open.";
-      try {
-        await saveInvoice(firebase, draft);
-        clearFinalizedInvoice(user.uid, draft);
-        location.replace(invoiceLink(invoiceKey(draft.invoiceNo)));
-      } catch (error) {
-        draftStatus.textContent = error.code === "duplicate-invoice" ? error.message
-          : databaseError(error, "Could not finalize the invoice. Your preview is still available.");
-        finalizeButton.disabled = false;
-        download.disabled = false;
-      }
-      return;
+      await saveInvoice(firebase, draft, true);
+      clearFinalizedInvoice(user.uid, draft);
+      location.replace(invoiceLink(invoiceKey(draft.invoiceNo)));
+    } catch (error) {
+      draftStatus.textContent = ["duplicate-invoice", "draft-changed"].includes(error.code) ? error.message
+        : databaseError(error, "Could not finalize the invoice. Try again when connected.");
+      finalizeButton.disabled = false;
+      download.disabled = false;
     }
-    location.replace(invoiceLink(draft.submissionId, true));
   });
 }
 
@@ -214,7 +200,11 @@ async function start() {
   const id = params.get("id");
   let invoice;
   if (draftId) {
-    invoice = readDraft(firebase.user.uid, draftId, Boolean(previewId));
+    try {
+      invoice = await readDraft(firebase, draftId, Boolean(previewId));
+    } catch (error) {
+      throw new Error(databaseError(error, "Could not load this draft. Check your connection and try again."));
+    }
   } else if (pendingId) {
     invoice = readPendingInvoice(firebase.user.uid, pendingId);
   } else if (id !== null) {
@@ -232,7 +222,8 @@ async function start() {
   if (!invoice) throw new Error("This invoice could not be found.");
   renderInvoice(invoice, Boolean(draftId));
   if (draftId) {
-    showDraftActions(firebase, invoice, Boolean(previewId));
+    if (previewId) history.replaceState(null, "", draftLink(invoice.draftId));
+    showDraftActions(firebase, invoice);
     showStatus("");
     return;
   }

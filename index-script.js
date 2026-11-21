@@ -4,7 +4,7 @@ import {
   MAX_ITEMS, readCustomer, validateCustomer,
 } from "./invoice-data.js";
 import {
-  draftLink, readDraft, readPendingInvoice, stageDraft,
+  draftLink, readDraft, readPendingInvoice, saveDraft,
 } from "./invoice-store.js";
 
 const form = document.getElementById("form");
@@ -113,7 +113,7 @@ function restoreInvoice(invoice) {
   refreshFinancialYear();
   refreshCustomer();
   interState.checked = invoice.interState;
-  const items = Object.entries(invoice.items);
+  const items = Object.entries(invoice.items).filter(([, item]) => item);
   showLines(Math.max(1, ...items.map(([index]) => Number(index))));
   for (const [index, item] of items) {
     const row = rows[Number(index) - 1];
@@ -194,11 +194,11 @@ async function start() {
   if (pendingId || draftId) {
     try {
       restoredInvoice = pendingId ? readPendingInvoice(user.uid, pendingId)
-        : readDraft(user.uid, draftId, Boolean(previewId));
+        : await readDraft(firebase, draftId, Boolean(previewId));
       if (restoredInvoice) restoreInvoice(restoredInvoice);
-      else status(formStatus, "This device no longer has that invoice copy.");
-    } catch {
-      status(formStatus, "This device could not reopen that invoice copy.");
+      else status(formStatus, "This invoice draft could not be found.");
+    } catch (error) {
+      status(formStatus, databaseError(error, "Could not reopen this invoice. Check your connection and try again."));
     }
   }
   watchCatalog(firebase);
@@ -241,8 +241,11 @@ async function start() {
     }, 0);
   });
 
-  form.addEventListener("submit", (event) => {
+  const submitButton = form.querySelector('button[type="submit"]');
+  const onlineDraft = draftId && !pendingId ? restoredInvoice : null;
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (submitButton.disabled) return;
     status(formStatus, "");
     const customer = readCustomer(form);
     const number = invoiceNo.value.trim();
@@ -262,7 +265,7 @@ async function start() {
 
     const invoice = {
       schemaVersion: 1,
-      draftId: restoredInvoice?.draftId ?? crypto.randomUUID(),
+      draftId: onlineDraft?.draftId ?? crypto.randomUUID(),
       submissionId: crypto.randomUUID(),
       previousPendingId: pendingId ?? restoredInvoice?.previousPendingId ?? null,
       invoiceNo: `${number}/${financialYearSuffix(invoiceDate.value)}`,
@@ -271,15 +274,17 @@ async function start() {
       items,
       interState: interState.checked,
       totals,
-      queuedAt: Date.now(),
     };
+    submitButton.disabled = true;
+    status(formStatus, "Saving draft… Keep this tab open.", true);
     try {
-      stageDraft(user.uid, invoice);
-    } catch {
-      status(formStatus, "This browser could not open the preview. Your details are still in the form.");
-      return;
+      await saveDraft(firebase, invoice, onlineDraft?.submissionId ?? null);
+      location.assign(draftLink(invoice.draftId));
+    } catch (error) {
+      status(formStatus, error.code === "draft-changed" ? error.message
+        : databaseError(error, "Could not save the draft. Your details are still in the form."));
+      submitButton.disabled = false;
     }
-    location.assign(draftLink(invoice.draftId, { preview: true }));
   });
 }
 
